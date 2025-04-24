@@ -1,5 +1,5 @@
 export type DishType = {
-  id: number;
+  id: string;
   name: string;
   kcal: string;
   image: string;
@@ -9,6 +9,7 @@ export type DishType = {
   isHot?: boolean;
   menu: string[];
   quantity?: number;
+  notes?: string;
   description: string;
   isRecommended?: boolean;
   dietaryPreferences?: string[];

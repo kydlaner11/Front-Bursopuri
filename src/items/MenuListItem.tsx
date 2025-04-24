@@ -135,7 +135,7 @@ export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
             color: 'var(--main-dark)',
           }}
         >
-          ${dish.price}
+          Rp {dish.price}
         </span>
       </div>
       <button

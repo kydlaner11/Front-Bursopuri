@@ -54,18 +54,17 @@ const PlusSvg = () => {
 export const MenuItem: React.FC<Props> = ({menuItemId}) => {
   const {dishes} = hooks.useGetDishes();
   const {list: cart, addToCart, removeFromCart} = stores.useCartStore();
-  // const {
-  //   list: wishlist,
-  //   addToWishlist,
-  //   removeFromWishlist,
-  // } = stores.useWishlistStore();
+  const [notes, setNotes] = React.useState('');
 
   const quantity =
-    cart.find((item) => Number(item.id) === Number(menuItemId))?.quantity ?? 0;
+    cart.find((item) => item.id === menuItemId)?.quantity ?? 0;
 
-  const dish = dishes.find((dish) => Number(dish.id) === Number(menuItemId));
+  const dish = dishes.find((dish) => dish.id === menuItemId);
 
-  // const ifInWishlist = wishlist.find((item) => item.id === dish?.id);
+  React.useEffect(() => {
+    const existingNotes = cart.find((item) => item.id === menuItemId)?.notes ?? '';
+    setNotes(existingNotes);
+  }, [menuItemId, cart]);
 
   if (!dish) {
     return (
@@ -192,6 +191,18 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
           </span>
         </div>
         <p className='t16'>{dish?.description}</p>
+        <textarea
+          placeholder='Add notes for this item...'
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          style={{
+            width: '100%',
+            marginTop: 10,
+            padding: 10,
+            borderRadius: 4,
+            border: '1px solid #ccc',
+          }}
+        />
       </section>
     );
   };
@@ -222,7 +233,7 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
                 fontFamily: 'DM Sans',
               }}
             >
-              ${dish?.price}
+              Rp {dish?.price}
             </span>
           </div>
           <div
@@ -264,7 +275,7 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
       >
         <components.Button
           label='+ Add to cart'
-          onClick={() => addToCart(dish)}
+          onClick={() => addToCart({...dish, notes})}
           containerStyle={{marginBottom: 10}}
         />
       </section>

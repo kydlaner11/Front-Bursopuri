@@ -132,7 +132,7 @@ export const Header: React.FC<Props> = ({
               fontSize: 10,
             }}
           >
-            ${total > 0 ? total.toFixed(2) : '0'}
+            Rp{total > 0 ? total : '0'}
           </span>
         </div>
         <svg.HeaderBasketSvg />

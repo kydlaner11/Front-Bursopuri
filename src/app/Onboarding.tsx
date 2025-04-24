@@ -43,7 +43,7 @@ export const Onboarding: React.FC = () => {
                 height={0}
                 sizes='100vw'
                 priority={true}
-                style={{width: '60%', height: 'auto', margin: '0 auto'}}
+                style={{width: '90%', height: 'auto', margin: '0 auto', borderRadius: 10}}
               />
             </SwiperSlide>
           ))}

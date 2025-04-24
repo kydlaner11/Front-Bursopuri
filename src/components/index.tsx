@@ -1,3 +1,4 @@
+import {Tag} from './Tag';
 import {Modal} from './Modal';
 import {Button} from './Button';
 import {Screen} from './Screen';
@@ -11,6 +12,7 @@ import {BottomTabBar} from './BottomTabBar';
 import {BlockHeading} from './BlockHeading';
 
 export const components = {
+  Tag,
   Modal,
   Screen,
   Button,

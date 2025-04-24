@@ -9,7 +9,7 @@ import {Routes} from '../../../routes';
 import {components} from '../../../components';
 
 export const Order: React.FC = () => {
-  const {list} = stores.useCartStore();
+  const {list, subtotal, total} = stores.useCartStore();
 
   const renderHeader = () => {
     return (
@@ -27,6 +27,12 @@ export const Order: React.FC = () => {
         className='scrollable container'
         style={{paddingTop: 10, paddingBottom: 10}}
       >
+        {<div style={{marginBottom: 10}}>
+          <components.Tag
+            label='Order Type'
+            value= 'Dine in'
+          />
+        </div>}
         {/* DISHES */}
         <section style={{marginBottom: 20}}>
           <ul>
@@ -45,9 +51,9 @@ export const Order: React.FC = () => {
 
         {/* APPLES PROMOCODE */}
         <section style={{marginBottom: '10%'}}>
-          <button>
+          {/* <button>
             <svg.ApplyPromocodeSvg />
-          </button>
+          </button> */}
         </section>
 
         {/* SUMMARY */}
@@ -79,7 +85,7 @@ export const Order: React.FC = () => {
                   className='t14'
                   style={{color: 'var(--main-dark)'}}
                 >
-                  {/* ${subtotal.toFixed(2)} */}
+                  Rp {subtotal}
                 </span>
               </li>
               {/* DISCOUNT */}
@@ -117,7 +123,7 @@ export const Order: React.FC = () => {
                 }}
               >
                 <h4>Total</h4>
-                {/* <h4>${total.toFixed(2)}</h4> */}
+                <h4>Rp {total}</h4>
               </li>
             </ul>
           </div>

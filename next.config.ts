@@ -8,7 +8,20 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   images: {
-    domains: ['george-fx.github.io'],
+    domains: [
+      'george-fx.github.io',
+      'olvdcaufunrrrzudxgyi.supabase.co',
+    ],
+  },
+  experimental: {
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
   },
 };
 

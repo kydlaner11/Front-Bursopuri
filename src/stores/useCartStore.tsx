@@ -45,6 +45,7 @@ export const useCartStore = create<CartStateType>()(
                 if (item.quantity) {
                   item.quantity += 1;
                 }
+                item.notes = dish.notes; // Update notes
               }
               return item;
             });

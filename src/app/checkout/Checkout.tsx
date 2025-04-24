@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import {svg} from '../../svg';
+// import {svg} from '../../svg';
 import {Routes} from '../../routes';
 import {stores} from '../../stores';
 import {components} from '../../components';
@@ -25,13 +25,19 @@ export const Checkout: React.FC = () => {
         className='scrollable container'
         style={{paddingTop: 10, paddingBottom: 10}}
       >
+        {<div style={{marginBottom: 10}}>
+          <components.Tag
+            label='Order Type'
+            value= 'Dine in'
+          />
+        </div>}
         {/* SUMMARY */}
         <section
           style={{
             padding: 20,
             borderRadius: 10,
             marginBottom: 14,
-            border: '1px solid var(--main-turquoise)',
+            backgroundColor: 'var(--white-color)',
           }}
         >
           <div
@@ -55,7 +61,7 @@ export const Checkout: React.FC = () => {
               className='t18'
               style={{color: 'var(--main-dark)'}}
             >
-              ${total.toFixed(2)}
+              Rp {total}
             </span>
           </div>
           <ul>
@@ -72,7 +78,7 @@ export const Checkout: React.FC = () => {
                 >
                   <span className='t14'>{dish.name}</span>
                   <span className='t14'>
-                    {dish.quantity} x ${dish.price}
+                    {dish.quantity} x Rp {dish.price}
                   </span>
                 </li>
               );
@@ -88,7 +94,7 @@ export const Checkout: React.FC = () => {
             }}
           >
             <span className='t14'>Discount</span>
-            <span className='t14'>- ${discount}</span>
+            <span className='t14'>- Rp {discount}</span>
           </div>
           <div
             style={{
@@ -99,7 +105,7 @@ export const Checkout: React.FC = () => {
             }}
           >
             <span className='t14'>Delivery</span>
-            <span className='t14'>${delivery}</span>
+            <span className='t14'>Rp {delivery}</span>
           </div>
         </section>
 
@@ -122,22 +128,62 @@ export const Checkout: React.FC = () => {
               className='t14 number-of-lines-1'
               style={{
                 fontWeight: 500,
-                marginBottom: 8,
+                marginBottom: 2,
                 color: 'var(--main-dark)',
                 textTransform: 'capitalize',
               }}
             >
-              Shipping details
+              Payment Information
             </span>
-            <span className='t12 number-of-lines-1'>
-              8000 S Kirkland Ave, Chicago, IL 6065...
+            <span className='t12'>
+             The data is used for order process. Make sure you enter a valis data.
             </span>
+            <form
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginTop: 10,
+              }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                // Handle form submission
+              }}
+            >
+              <input
+                type='text'
+                placeholder='Full Name'
+                style={{
+                  padding: 10,
+                  borderRadius: 5,
+                  border: '1px solid var(--border-color)',
+                  marginBottom: 10,
+                }}
+              />
+              <input
+                type='text'
+                placeholder='Phone Number'
+                style={{
+                  padding: 10,
+                  borderRadius: 5,
+                  border: '1px solid var(--border-color)',
+                  marginBottom: 10,
+                }}
+              />
+              <input
+                type='text'
+                placeholder='Table Number'
+                style={{
+                  padding: 10,
+                  borderRadius: 5,
+                  border: '1px solid var(--border-color)',
+                }}
+              />
+            </form>
           </div>
-          <svg.RightArrowSvg />
         </section>
 
         {/* PAYMENT METHOD */}
-        <section
+        {/* <section
           style={{
             padding: 20,
             borderRadius: 10,
@@ -164,7 +210,7 @@ export const Checkout: React.FC = () => {
             <span className='t12 number-of-lines-1'>4947 **** **** 3157</span>
           </div>
           <svg.RightArrowSvg />
-        </section>
+        </section> */}
       </main>
     );
   };
