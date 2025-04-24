@@ -22,7 +22,7 @@ export const RecommendedItem: React.FC<Props> = ({item}) => {
   //   removeFromWishlist,
   // } = stores.useWishlistStore();
 
-  const dishId = item.id;
+  // const dishId = item.id;
 
   // const ifInWishlist = wishlist.find((item) => item.id === dishId);
 
