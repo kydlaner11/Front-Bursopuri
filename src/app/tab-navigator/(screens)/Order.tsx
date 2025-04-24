@@ -2,7 +2,6 @@
 
 import React from 'react';
 
-import {svg} from '../../../svg';
 import {items} from '../../../items';
 import {stores} from '../../../stores';
 import {Routes} from '../../../routes';
