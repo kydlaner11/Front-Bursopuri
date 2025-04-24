@@ -11,7 +11,7 @@ export const DishPrice: React.FC<Props> = ({dish}) => {
         className='t14'
         style={{fontWeight: 500, color: 'var(--main-dark)'}}
       >
-        ${dish.price}
+        Rp {dish.price}
       </span>
       <div style={{width: 1, height: 10, backgroundColor: '#D5DCE3'}} />
       <span className='t14'>{dish.weight}g</span>

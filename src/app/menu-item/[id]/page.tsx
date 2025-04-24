@@ -10,9 +10,9 @@ type Params = {
 };
 
 export async function generateMetadata({params}: Params): Promise<Metadata> {
-  const {id} = await params;
+  const {id} = await await params;
   const dishes = await getDishes();
-  const dish = dishes?.find((dish: DishType) => Number(dish.id) === Number(id));
+  const dish = dishes?.find((dish: DishType) => dish.id === id);
 
   return {
     title: dish ? dish.name : 'MenuItem',

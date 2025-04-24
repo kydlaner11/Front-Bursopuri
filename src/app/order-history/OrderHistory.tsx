@@ -90,7 +90,7 @@ export const OrderHistory: React.FC = () => {
                         className='t14'
                         style={{fontWeight: 500, color: 'var(--main-dark)'}}
                       >
-                        ${order.total}
+                        Rp {order.total}
                       </span>
                     </section>
                     <section
@@ -139,7 +139,7 @@ export const OrderHistory: React.FC = () => {
                               style={{marginLeft: 'auto'}}
                               className='t14'
                             >
-                              {product.quantity} x ${product.price}
+                              {product.quantity} x Rp {product.price}
                             </span>
                           </li>
                         );
@@ -154,7 +154,7 @@ export const OrderHistory: React.FC = () => {
                         }}
                       >
                         <span className='t14'>Discount</span>
-                        <span className='t14'>- ${order.discount}</span>
+                        <span className='t14'>- Rp {order.discount}</span>
                       </li>
                       <li
                         style={{
@@ -165,7 +165,7 @@ export const OrderHistory: React.FC = () => {
                         }}
                       >
                         <span className='t14'>Delivery</span>
-                        <span className='t14'>${order.delivery}</span>
+                        <span className='t14'>Rp {order.delivery}</span>
                       </li>
                     </ul>
                   </section>

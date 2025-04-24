@@ -35,7 +35,7 @@ export const Menu: React.FC = () => {
           }}
         >
           {menu.map((item) => {
-            const category = item.name.toLowerCase().replace(' ', '-');
+            const category = item.name.replace(' ', '-');
             return (
               <li key={item.id}>
                 <Link
