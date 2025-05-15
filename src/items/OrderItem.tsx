@@ -1,10 +1,13 @@
-import React from 'react';
-import Link from 'next/link';
+import React, { useState } from 'react';
+// import Link from 'next/link';
 import Image from 'next/image';
 
-import {Routes} from '../routes';
+// import {Routes} from '../routes';
 import {stores} from '../stores';
 import {dish as dishItem} from '../dish';
+import { FormOutlined, UpOutlined, DownOutlined  } from '@ant-design/icons';
+import { formatToIDRCurrency } from '../utils/currencyFormatter';
+import {getSelectedOptionsPrice} from '../utils/selectedOptions';
 
 import type {DishType} from '../types';
 
@@ -62,22 +65,22 @@ const PlusSvg: React.FC = () => {
 
 export const OrderItem: React.FC<Props> = ({dish, isLast}) => {
   const {addToCart, removeFromCart} = stores.useCartStore();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const extra = getSelectedOptionsPrice(dish.selectedOptions || []);
 
   return (
-    <li>
-      <Link
-        href={`${Routes.MENU_ITEM}/${dish.id}`}
-        style={{
-          paddingRight: 0,
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          position: 'relative',
-          marginBottom: isLast ? 0 : 14,
-          borderRadius: 'var(--border-radius)',
-          backgroundColor: 'var(--white-color)',
-        }}
-      >
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
+        padding: 12,
+        marginBottom: isLast ? 0 : 16,
+      }}
+    >
+      <div style={{display: 'flex', gap: 12, alignItems: 'center'}}>
         <Image
           src={dish.image}
           alt={'dish'}
@@ -92,22 +95,43 @@ export const OrderItem: React.FC<Props> = ({dish, isLast}) => {
             marginLeft: 4,
           }}
         />
-        <div style={{marginRight: 'auto'}}>
-          <dishItem.DishName
-            dish={dish}
-            style={{marginBottom: 4}}
-          />
-          <span
-            style={{marginBottom: 14}}
-            className='t10 number-of-lines-1'
+        <div style={{flex: 1}}>
+          <dishItem.DishName dish={dish} style={{marginBottom: 4, color: 'var(--main-dark', fontWeight: 600}} />
+          <div style={{gap: 7, display: 'flex', alignItems: 'center'}}>
+            <span
+              className='t14'
+              style={{fontWeight: 500, color: 'var(--main-dark)'}}
+            >
+            {formatToIDRCurrency((Number(dish.price) + extra) * (dish.quantity || 1))}
+            </span>
+            {/* <div style={{width: 1, height: 10, backgroundColor: '#D5DCE3'}} />
+            <span className='t14'>{dish.weight}g</span> */}
+          </div>
+          <button
+            className='t12'
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#0C1D2E',
+              marginTop: 8,
+              alignSelf: 'flex-start',
+              cursor: 'pointer',
+            }}
+            onClick={() => setIsExpanded((prev) => !prev)}
           >
-            {dish.kcal} kcal - {dish.weight} g
-          </span>
-          <dishItem.DishPrice dish={dish} />
+            {isExpanded ? (
+              <span style={{ color: 'var(--secondary-text-color)', gap: 10, display: 'flex', alignItems: 'center'}}>
+                Hide Details <UpOutlined />
+              </span>
+            ) : (
+              <span style={{ color: 'var(--secondary-text-color)', gap: 10, display: 'flex', alignItems: 'center'}}>
+                View Details <DownOutlined />
+              </span>
+            )}
+          </button>
         </div>
         <div
           style={{
-            height: '100%',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -115,7 +139,6 @@ export const OrderItem: React.FC<Props> = ({dish, isLast}) => {
           }}
         >
           <button
-            style={{padding: '14px 14px 4px 14px', borderRadius: 4}}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -124,43 +147,58 @@ export const OrderItem: React.FC<Props> = ({dish, isLast}) => {
           >
             <MinusSvg />
           </button>
-          <span
-            className='t12'
-            style={{lineHeight: 1}}
-          >
-            {dish.quantity}
-          </span>
+          <span className="t12">{dish.quantity}</span>
           <button
-            style={{padding: '4px 14px 14px 14px', borderRadius: 4}}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              addToCart(dish);
+              addToCart({
+                ...dish,
+                quantity: 1,
+              });
             }}
           >
             <PlusSvg />
           </button>
-          {dish.isNew && (
-            <Image
-              alt='New'
-              width={34}
-              height={29}
-              src={'/assets/icons/14.png'}
-              style={{left: 7, top: 7, position: 'absolute'}}
-            />
+        </div>
+      </div>
+
+      
+
+      {isExpanded && (
+        <div
+          style={{
+            marginTop: 10,
+            padding: 10,
+          }}
+        >
+          {dish.selectedOptions && dish.selectedOptions.length > 0 && (
+            <ul style={{marginTop: 5, borderTop: '1px solid #E6E6E6'}}>
+              {dish.selectedOptions.map((option, idx) => (
+                <li key={idx} style={{marginTop: 10}}> 
+                  <p className='t14' style={{ color: '#555'}}>
+                    {option.name}
+                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <p className='t14' style={{ color: 'var(--main-dark)', fontWeight: 500 }}>
+                      {option.selected.map((selectedItem) => selectedItem.name).join(', ')}
+                    </p>
+                    <p className='t14' style={{ color: '#555', marginLeft: 10 }}>
+                      {option.selected.map((selectedItem) => formatToIDRCurrency(selectedItem.price)).join(', ')}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
-          {dish.isHot && (
-            <Image
-              src={'/assets/icons/15.png'}
-              priority={true}
-              alt='Hot'
-              width={13}
-              height={24}
-              style={{left: 7, top: 7, position: 'absolute'}}
-            />
+          {dish.notes && (
+            <p style={{marginTop: 10}}>
+              <FormOutlined /> {dish.notes}
+            </p>
           )}
         </div>
-      </Link>
-    </li>
+      )}
+    </div>
   );
 };
+

@@ -6,16 +6,15 @@ import React, {useState} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import PuffLoader from 'react-spinners/PuffLoader';
 
-
 import {svg} from '../../../svg';
 import {items} from '../../../items';
 import {hooks} from '../../../hooks';
 import {Routes} from '../../../routes';
 import {components} from '../../../components';
+import {stores} from '../../../stores';
 
 export const Home: React.FC = () => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [orderType, setOrderType] = useState('Dine in');
   const [showModal, setShowModal] = useState(false);
 
   const {menu, menuLoading} = hooks.useGetMenu();
@@ -30,8 +29,10 @@ export const Home: React.FC = () => {
     setActiveSlide(swiper.activeIndex);
   };
 
+  const {setOrderType, orderType} = stores.useCartStore(); // Retrieve orderType from the store
+
   const handleOrderTypeChange = (type: string) => {
-    setOrderType(type);
+    setOrderType(type); // Use setOrderType directly
     setShowModal(false);
   };
 
@@ -71,7 +72,7 @@ export const Home: React.FC = () => {
             containerStyle={{flex: 1, backgroundColor: 'var(--white-color)'}}
           />
         </Link>
-        <Link
+        {/* <Link
           href={`${Routes.MENU_LIST}/all`}
           style={{
             width: 50,
@@ -85,7 +86,7 @@ export const Home: React.FC = () => {
           className='center'
         >
           <svg.FilterSvg />
-        </Link>
+        </Link> */}
       </section>
     );
   };
@@ -120,7 +121,7 @@ export const Home: React.FC = () => {
                     height={90}
                     sizes='100vw'
                     priority={true}
-                    style={{width: '100%', height: '100%', borderRadius: 10}}
+                    style={{width: '100%', height: '100%', borderRadius: 10, border: '1px solid var(--border-color)', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)'}}  
                   />
                   <span
                     style={{
@@ -158,6 +159,7 @@ export const Home: React.FC = () => {
             marginBottom: 20,
             position: 'relative',
             zIndex: 2,
+            
           }}
         >
           <div
@@ -165,13 +167,15 @@ export const Home: React.FC = () => {
             style={{
               flex: 1,
               backgroundColor: 'var(--white-color)',
-              padding: '20px 30px',
+              padding: '20px 40px',
               borderRadius: 10,
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
               cursor: 'pointer',
               color: 'black',
+              border: '2px solid var(--border-color)',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
             }}
             onClick={() => setShowModal(true)}
           >
@@ -181,9 +185,12 @@ export const Home: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 5,
+                padding: '10px 20px',
+                borderRadius: 10,
+                border: '2px solid var(--border-color)',
               }}
             >
-              <span className='h6'>{orderType}</span>
+              <span className='h6'>{orderType}</span> {/* Use orderType here */}
               <svg.ArrowDownSvg />
             </div>
           </div>

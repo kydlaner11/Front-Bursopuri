@@ -139,14 +139,27 @@ export const Modal: React.FC = () => {
             borderBottom: '1px solid #DBE9F5',
           }}
         >
-          <Image
+          {/* <Image
             width={60}
             height={60}
             alt='user'
             style={{borderRadius: 30}}
             priority={true}
             src={`${URLS.MAIN_URL}/assets/users/01.jpg`}
-          />
+          /> */}
+          <div
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: '50%',
+              backgroundColor: '#E0E0E0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <svg.UserSvg />
+          </div>
           <div style={{display: 'flex', flexDirection: 'column'}}>
             <span
               className='t14'
@@ -156,9 +169,9 @@ export const Modal: React.FC = () => {
                 marginBottom: 4,
               }}
             >
-              Jordan Hebert
+              Guest
             </span>
-            <span className='t14'>jordanhebert@mail.com</span>
+            <span className='t14'>Welcome to bursopuri App</span>
           </div>
            {/* <div
             style={{

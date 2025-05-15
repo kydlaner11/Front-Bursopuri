@@ -2,12 +2,27 @@
 
 import React from 'react';
 import Image from 'next/image';
+import {useRouter} from 'next/navigation'; // Tambahkan impor useRouter
 
 import {URLS} from '../../config';
 import {Routes} from '../../routes';
+import {stores} from '../../stores';
 import {components} from '../../components';
 
 export const OrderSuccessful: React.FC = () => {
+  const {resetCart} = stores.useCartStore();
+  const router = useRouter(); // Inisialisasi router
+
+  const renderHeader = () => {
+      return (
+        <components.Header
+          title='Payment'
+          showGoBack={false}
+
+        />
+      );
+    };
+
   const renderContent = () => {
     return (
       <main
@@ -64,12 +79,18 @@ export const OrderSuccessful: React.FC = () => {
     return (
       <section style={{padding: 20}}>
         <components.Button
-          label='Continue Shopping'
-          href={`${Routes.MENU_LIST}/all`}
+          label='New order'
           containerStyle={{marginBottom: 14}}
+          onClick={() => {
+            resetCart();
+            router.push(Routes.TAB_NAVIGATOR); // Gunakan router.push untuk navigasi
+          }}
         />
         <components.Button
-          href={Routes.ORDER_HISTORY}
+          onClick={() => {
+            resetCart();
+            router.push(Routes.ORDER_HISTORY); 
+          }}
           label='View orders'
           colorScheme='secondary'
         />
@@ -79,6 +100,7 @@ export const OrderSuccessful: React.FC = () => {
 
   return (
     <components.Screen>
+      {renderHeader()}
       {renderContent()}
       {renderButtons()}
     </components.Screen>

@@ -1,11 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import {dish} from '../dish';
 
 import {svg} from '../svg';
-import {stores} from '../stores';
+// import {stores} from '../stores';
 import {Routes} from '../routes';
 
 import type {DishType} from '../types';
@@ -15,7 +16,8 @@ type Props = {
 };
 
 export const RecommendedItem: React.FC<Props> = ({item}) => {
-  const {addToCart} = stores.useCartStore();
+  // const {addToCart} = stores.useCartStore();
+  const router = useRouter();
   // const {
   //   list: wishlist,
   //   addToWishlist,
@@ -34,6 +36,8 @@ export const RecommendedItem: React.FC<Props> = ({item}) => {
         backgroundColor: 'var(--white-color)',
         borderRadius: '10px',
         position: 'relative',
+        border: '1px solid var(--border-color)',
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
       }}
     >
       <Image
@@ -96,7 +100,7 @@ export const RecommendedItem: React.FC<Props> = ({item}) => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              addToCart(item);
+              router.push(`${Routes.MENU_ITEM}/${item.id}`);
             }}
           >
             <svg.PlusSvg />

@@ -6,9 +6,10 @@ import {items} from '../../../items';
 import {stores} from '../../../stores';
 import {Routes} from '../../../routes';
 import {components} from '../../../components';
+import {formatToIDRCurrency} from '../../../utils/currencyFormatter';
 
 export const Order: React.FC = () => {
-  const {list, subtotal, total} = stores.useCartStore();
+  const {list, subtotal, total, orderType, quantity} = stores.useCartStore();
 
   const renderHeader = () => {
     return (
@@ -26,116 +27,123 @@ export const Order: React.FC = () => {
         className='scrollable container'
         style={{paddingTop: 10, paddingBottom: 10}}
       >
-        {<div style={{marginBottom: 10}}>
+        {/* Order Type */}
+        <div style={{marginBottom: 30, marginTop: 10}}>
           <components.Tag
             label='Order Type'
-            value= 'Dine in'
+            value={orderType} // Display the current order type
           />
-        </div>}
+        </div>
         {/* DISHES */}
         <section style={{marginBottom: 20}}>
           <ul>
             {list.map((dish, index, array) => {
               const isLast = index === array.length - 1;
+              console.log(dish)
+              console.log(array)
               return (
                 <items.OrderItem
                   dish={dish}
-                  key={dish.id}
+                  key={`${dish.id}-${dish.notes ?? ''}-${index}`}
                   isLast={isLast}
                 />
               );
             })}
           </ul>
         </section>
-
         {/* APPLES PROMOCODE */}
         <section style={{marginBottom: '10%'}}>
           {/* <button>
             <svg.ApplyPromocodeSvg />
           </button> */}
         </section>
+      </main>
+    );
+  };
 
-        {/* SUMMARY */}
-        <section style={{marginBottom: 20}}>
-          <div
-            style={{
-              padding: 20,
-              borderRadius: 10,
-              border: '1px solid var(--main-turquoise)',
-            }}
-          >
-            <ul>
-              {/* SUBTOTAL */}
-              <li
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: 10,
-                }}
+  const renderStickySections = () => {
+
+    return (
+      <menu
+      className='container'
+        style={{
+          position: 'sticky',
+          bottom: 0,
+          // backgroundColor: 'white',
+          zIndex: 10,
+        }}
+      >
+        {/* Payment Details */}
+        <section
+          style={{
+            padding: 20,
+            borderRadius: 10,
+            border: '1px solid var(--main-turquoise)',
+            marginBottom: 10,
+          }}
+        >
+          <ul>
+            {/* SUBTOTAL */}
+            <li
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingBottom: 14,
+                marginBottom: 20,
+              }}
+            >
+              <span
+                className='t16'
+                style={{color: 'var(--main-dark)', fontWeight: 800}}
               >
-                <span
-                  className='t14'
-                  style={{color: 'var(--main-dark)', fontWeight: 500}}
-                >
-                  Subtotal
-                </span>
-                <span
-                  className='t14'
-                  style={{color: 'var(--main-dark)'}}
-                >
-                  Rp {subtotal}
-                </span>
-              </li>
-              {/* DISCOUNT */}
-              <li
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: 10,
-                }}
+                Payment Detail
+              </span>
+            </li>
+            <li
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingBottom: 14,
+                marginBottom: 20,
+                borderBottom: '1px solid #DBE9F5',
+              }}
+            >
+              <span
+                className='t14'
+                style={{color: 'var(--main-dark)', fontWeight: 500}}
               >
-                <span className='t14'>Discount</span>
-                {/* <span className='t14'>${discount}</span> */}
-              </li>
-              {/* DELIVERY */}
-              <li
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  paddingBottom: 14,
-                  marginBottom: 20,
-                  borderBottom: '1px solid #DBE9F5',
-                }}
+                Subtotal ({quantity} Menu)
+              </span>
+              <span
+                className='t14'
+                style={{color: 'var(--main-dark)'}}
               >
-                <span className='t14'>Delivery</span>
-                {/* <span className='t14'>${delivery}</span> */}
-              </li>
-              {/* TOTAL */}
-              <li
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <h4>Total</h4>
-                <h4>Rp {total}</h4>
-              </li>
-            </ul>
-          </div>
+                {formatToIDRCurrency(subtotal)}
+              </span>
+            </li>
+            {/* TOTAL */}
+            <li
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <h4>Total</h4>
+              <h4>{formatToIDRCurrency(total)}</h4>
+            </li>
+          </ul>
         </section>
-
-        {/* BUTTON */}
+        {/* Button */}
         <section>
           <components.Button
             label='Checkout'
             href={Routes.CHECKOUT}
           />
         </section>
-      </main>
+      </menu>
     );
   };
 
@@ -151,6 +159,7 @@ export const Order: React.FC = () => {
     <components.Screen>
       {renderHeader()}
       {renderContent()}
+      {renderStickySections()}
       {renderModal()}
       {renderBottomTabBar()}
     </components.Screen>

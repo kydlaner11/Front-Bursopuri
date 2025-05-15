@@ -8,6 +8,7 @@ import {components} from '../../components';
 
 export const OrderHistory: React.FC = () => {
   const {orders} = hooks.useGetOrders();
+  console.log('orders', orders);
 
   const [openAccordions, setOpenAccordions] = useState<Set<string>>(new Set());
 

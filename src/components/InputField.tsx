@@ -30,6 +30,7 @@ export const InputField: React.FC<Props> = ({
         borderRadius: 10,
         padding: '5px 0px 5px 5px',
         backgroundColor: '#E9F3F6',
+        border: '1px solid var(--border-color)',
         ...containerStyle,
       }}
     >

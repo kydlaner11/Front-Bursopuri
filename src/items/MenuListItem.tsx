@@ -2,10 +2,12 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-import {svg} from '../svg';
+// import {svg} from '../svg';
 import {Routes} from '../routes';
 import {stores} from '../stores';
 import {DishType} from '../types';
+import { formatToIDRCurrency } from '@/utils/currencyFormatter';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   dish: DishType;
@@ -38,15 +40,17 @@ const PlusSvg = () => {
 };
 
 export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
-  const {list: cart, addToCart} = stores.useCartStore();
-  const {
-    list: wishlist,
-    addToWishlist,
-    removeFromWishlist,
-  } = stores.useWishlistStore();
+  const {list: cart} = stores.useCartStore();
+  const router = useRouter();
+  const formattedPrice = formatToIDRCurrency(Number(dish.price));
+  // const {
+  //   list: wishlist,
+  //   addToWishlist,
+  //   removeFromWishlist,
+  // } = stores.useWishlistStore();
 
   const qty = cart.find((item) => item.id === dish.id)?.quantity ?? 0;
-  const ifInWishlist = wishlist.find((item) => item.id === dish.id);
+  // const ifInWishlist = wishlist.find((item) => item.id === dish.id);
 
   return (
     <li
@@ -135,10 +139,10 @@ export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
             color: 'var(--main-dark)',
           }}
         >
-          Rp {dish.price}
+          {formattedPrice}
         </span>
       </div>
-      <button
+      {/* <button
         style={{
           padding: 14,
           position: 'absolute',
@@ -157,7 +161,7 @@ export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
         }}
       >
         <svg.HeartSvg dish={dish} />
-      </button>
+      </button> */}
       {qty > 0 && (
         <div
           style={{
@@ -194,7 +198,7 @@ export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
-            addToCart(dish);
+            router.push(Routes.MENU_ITEM + `/${dish.id}`);
           }}
         >
           <PlusSvg />

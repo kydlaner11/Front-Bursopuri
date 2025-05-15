@@ -1,12 +1,14 @@
 import React from 'react';
+import { CheckCircleOutlined } from '@ant-design/icons';
 
 interface TagProps {
   label: string;
   value: string;
   onClick?: () => void;
+  icon?: React.ReactNode;
 }
 
-export const Tag: React.FC<TagProps> = ({ label, value, onClick }) => {
+export const Tag: React.FC<TagProps> = ({ label, value, onClick, icon = <CheckCircleOutlined /> }) => {
   return (
     <div
       style={{
@@ -22,8 +24,17 @@ export const Tag: React.FC<TagProps> = ({ label, value, onClick }) => {
       onClick={onClick}
     >
       <span style={{ fontSize: 14, color: 'var(--main-dark)' }}>{label}</span>
-      <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--main-dark)' }}>
+      <span
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          fontSize: 14,
+          fontWeight: 500,
+          color: 'var(--main-dark)',
+        }}
+      >
         {value}
+        {icon && <span style={{ marginLeft: 8 }}>{icon}</span>}
       </span>
     </div>
   );

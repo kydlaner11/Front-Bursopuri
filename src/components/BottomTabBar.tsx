@@ -47,6 +47,8 @@ export const BottomTabBar: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'space-around',
             backgroundColor: 'var(--white-color)',
+            border: '1px solid var(--border-color)',
+            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
           }}
         >
           {tabs.map((tab) => {

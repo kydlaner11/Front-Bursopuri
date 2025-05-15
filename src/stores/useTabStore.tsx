@@ -14,12 +14,25 @@ const initialState: Omit<TabStateType, 'setScreen'> = {
 
 export const useTabStore = create<TabStateType>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...initialState,
       setScreen: (screen: string) => set({screen}),
+      // Reset screen to HOME on initialization
+      hydrate: () => {
+        if (get().screen !== TabScreens.HOME) {
+          set({screen: TabScreens.HOME});
+        }
+      },
     }),
     {
       name: 'tab-storage',
+      onRehydrateStorage: () => (state) => {
+        if (state?.screen !== TabScreens.HOME) {
+          if (state) {
+            state.screen = TabScreens.HOME;
+          }
+        }
+      },
     },
   ),
 );

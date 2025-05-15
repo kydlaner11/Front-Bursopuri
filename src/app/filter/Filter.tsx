@@ -8,32 +8,32 @@ import {components} from '../../components';
 const menu = [
   {
     id: 1,
-    name: 'Salads',
+    name: 'Makanan',
   },
   {
     id: 2,
-    name: 'Meat',
+    name: 'Minuman',
   },
   {
     id: 3,
-    name: 'Pasta',
+    name: 'Sate',
   },
-  {
-    id: 4,
-    name: 'Desserts',
-  },
-  {
-    id: 5,
-    name: 'Drinks',
-  },
-  {
-    id: 6,
-    name: 'Soups',
-  },
-  {
-    id: 7,
-    name: 'Snacks',
-  },
+  // {
+  //   id: 4,
+  //   name: 'Desserts',
+  // },
+  // {
+  //   id: 5,
+  //   name: 'Drinks',
+  // },
+  // {
+  //   id: 6,
+  //   name: 'Soups',
+  // },
+  // {
+  //   id: 7,
+  //   name: 'Snacks',
+  // },
 ];
 
 const preferences = [

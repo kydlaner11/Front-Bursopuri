@@ -4,14 +4,20 @@ import Image from 'next/image';
 import React, {useState} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import PuffLoader from 'react-spinners/PuffLoader';
+import { useTableNumber } from '../hooks/useTableNumber';
+import {useRouter} from 'next/navigation';
+
 
 import {hooks} from '../hooks';
 import {Routes} from '../routes';
 import {components} from '../components';
+import {useSession} from '../hooks/useSession';
 
 export const Onboarding: React.FC = () => {
+  const router = useRouter();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-
+  const {tableNumber} = useTableNumber();
+  const {sessionId} = useSession();
   const {onboarding: onboardingData, onboardingLoading} =
     hooks.useGetOnboarding();
 
@@ -127,7 +133,10 @@ export const Onboarding: React.FC = () => {
       >
         <components.Button
           label='Get Started'
-          href={Routes.TAB_NAVIGATOR}
+          onClick={() => {
+            router.push(Routes.TAB_NAVIGATOR);
+            sessionId;
+          }}
         />
       </section>
     );
@@ -159,8 +168,34 @@ export const Onboarding: React.FC = () => {
     );
   };
 
+  const renderTableInfo = () => {
+    if (tableNumber) {
+      return (
+        <div 
+          style={{
+            position: 'absolute',
+            top: 20,
+            right: 20,
+            backgroundColor: '#7C0000',
+            color: 'white',
+            padding: '8px 16px',
+            borderRadius: 20,
+            fontSize: 14,
+            fontWeight: 'bold',
+            zIndex: 10
+          }}
+        >
+          Meja #{tableNumber}
+          {sessionId}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <components.Screen>
+      {renderTableInfo()}
       {renderCarousel()}
       {renderDots()}
       {renderDescription()}

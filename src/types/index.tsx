@@ -1,5 +1,5 @@
 import type {UserType} from './UserType';
-import type {DishType} from './DishType';
+import type {DishType, SelectedOption} from './DishType'; // Added SelectedOption import
 import type {MenuType} from './MenuType';
 import type {OrderType} from './OrderType';
 import type {ColorType} from './ColorType';
@@ -15,6 +15,7 @@ import type {NotificationType} from './NotificationType';
 
 export type {
   DishType,
+  SelectedOption, // Added SelectedOption export
   UserType,
   MenuType,
   ColorType,

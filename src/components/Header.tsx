@@ -1,11 +1,10 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import {useRouter, usePathname} from 'next/navigation';
+import {formatToIDRCurrency} from '../utils/currencyFormatter';
 
 import {svg} from '../svg';
-import {URLS} from '../config';
 import {stores} from '../stores';
 import {Routes} from '../routes';
 import {TabScreens} from '../routes';
@@ -59,13 +58,19 @@ export const Header: React.FC<Props> = ({
           style={{gap: 10, alignItems: 'center', display: 'flex'}}
           className='clickable'
         >
-          <Image
-            src={`${URLS.MAIN_URL}/assets/users/01.jpg`}
-            priority={true}
-            alt='User Avatar'
-            width={30}
-            height={30}
-          />
+          <div
+            style={{
+              width: 25,
+              height: 25,
+              borderRadius: '50%',
+              backgroundColor: '#E0E0E0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <svg.UserSvg />
+          </div>
         </div>
       </button>
     );
@@ -132,7 +137,7 @@ export const Header: React.FC<Props> = ({
               fontSize: 10,
             }}
           >
-            Rp{total > 0 ? total : '0'}
+            {formatToIDRCurrency(total > 0 ? total : 0)}
           </span>
         </div>
         <svg.HeaderBasketSvg />

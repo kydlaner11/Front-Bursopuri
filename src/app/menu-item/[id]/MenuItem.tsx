@@ -2,12 +2,18 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 
 // import {svg} from '../../../svg';
 import {hooks} from '../../../hooks';
 // import {Routes} from '../../../routes';
 import {stores} from '../../../stores';
 import {components} from '../../../components';
+import {Checkbox, Typography, message} from 'antd';
+import {formatToIDRCurrency} from '../../../utils/currencyFormatter';
+import PuffLoader from 'react-spinners/PuffLoader';
+import { handleOptionSelect } from '../../../utils/optionsSelected';
+import { Routes, TabScreens } from '@/routes';
 
 type Props = {
   menuItemId: string;
@@ -51,34 +57,70 @@ const PlusSvg = () => {
   );
 };
 
-export const MenuItem: React.FC<Props> = ({menuItemId}) => {
-  const {dishes} = hooks.useGetDishes();
-  const {list: cart, addToCart, removeFromCart} = stores.useCartStore();
-  const [notes, setNotes] = React.useState('');
+const {Title} = Typography;
 
-  const quantity =
-    cart.find((item) => item.id === menuItemId)?.quantity ?? 0;
+export const MenuItem: React.FC<Props> = ({menuItemId}) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { setScreen } = stores.useTabStore(); 
+  const [messages, contextHolder] = message.useMessage();
+  const {dishes, dishesLoading} = hooks.useGetDishes();
+  const {list: cart, addToCart} = stores.useCartStore();
+  const [notes, setNotes] = React.useState('');
+  const initialQuantity = cart.find((item) => 
+    item.id === menuItemId && 
+    (!item.selectedOptions || item.selectedOptions.length === 0)
+  )?.quantity ?? 1;
+  const [localQuantity, setLocalQuantity] =  React.useState(initialQuantity);;
+  const isLoading = dishesLoading;
+  const [selectedOptions, setSelectedOptions] = React.useState<{
+    [key: string]: { name: string; price: number }[];
+  }>({});
 
   const dish = dishes.find((dish) => dish.id === menuItemId);
+  const options = dish?.option || {}; // Use options from the API response
 
-  React.useEffect(() => {
-    const existingNotes = cart.find((item) => item.id === menuItemId)?.notes ?? '';
-    setNotes(existingNotes);
-  }, [menuItemId, cart]);
+  const onSelect = (category: keyof typeof options, choice: string) => {
+    const categoryOptions = options[category];
+    if (!categoryOptions) return;
+
+    const selectedChoice = categoryOptions.choices.find(c => c.name === choice);
+    const price = selectedChoice ? selectedChoice.price : 0;
+
+    setSelectedOptions((prev) =>
+      handleOptionSelect(prev, category, { name: choice, price }, options)
+    );
+  };
+
+    const handleQuantityChange = (newQuantity: number) => {
+      setLocalQuantity(newQuantity);
+    };
+   
 
   if (!dish) {
+    if (dishesLoading) return null;
+
     return (
       <section>
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-          }}
-        >
-          <p>Not found</p>
-        </div>
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          inset: 0,
+          height: '100%',
+        }}
+        className='flex-center'
+      >
+        <PuffLoader
+          size={40}
+          color={'#455A81'}
+          aria-label='Loading Spinner'
+          data-testid='loader'
+          speedMultiplier={1}
+        />
+      </div>
       </section>
     );
   }
@@ -163,6 +205,31 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
     );
   };
 
+  const renderNote = () => {
+    return (
+      <div className="container">
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 5,
+          }}
+        >
+          <Title level={5}>Notes</Title>
+          <p className="option-subtext">Optional</p>
+        </div>
+        <components.Textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder='Contoh: Tanpa Bawang, Pedas'
+          rows={4}
+          style={{borderRadius: 10, marginBottom: 20}}
+        />
+      </div>
+    );
+  };
+
   const renderDetails = () => {
     return (
       <section
@@ -183,31 +250,70 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
           >
             {dish?.name}
           </h3>
-          <span
+          {/* <span
             className='t16'
             style={{marginLeft: 14, whiteSpace: 'nowrap'}}
           >
             {dish?.kcal} kcal - {dish?.weight}g
-          </span>
+          </span> */}
         </div>
         <p className='t16'>{dish?.description}</p>
-        <textarea
-          placeholder='Add notes for this item...'
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          style={{
-            width: '100%',
-            marginTop: 10,
-            padding: 10,
-            borderRadius: 4,
-            border: '1px solid #ccc',
-          }}
-        />
+        
       </section>
     );
   };
 
+  const renderOptions = () => {
+    return Object.entries(options).map(([category, optionData]) => (
+      <div 
+        key={category}
+        className='container option-group' 
+        style={{ marginBottom: 20 }}>
+        <div className="option-header">
+          <Title level={5}>{category}</Title>
+          <p className="option-subtext">
+            {optionData.optional 
+              ? `Optional - Pilih maks. ${optionData.max}` 
+              : (
+                <span>
+                  <span style={{ color: 'var(--main-turquoise)' }}>Harus dipilih</span> - Pilih {optionData.max}
+                </span>
+              )}
+          </p>
+        </div>
+        <div className="option-list">
+          {optionData.choices.map((choice) => {
+            const selected = selectedOptions[category]?.some(opt => opt.name === choice.name);
+            const disabled =
+              !selected &&
+              (selectedOptions[category]?.length || 0) >= optionData.max;
+
+            return (
+              <div
+                key={choice.name}
+                className={`option-item ${selected ? 'selected' : ''} ${disabled ? 'disabled' : ''}`}
+                onClick={() => !disabled && onSelect(category, choice.name)}
+              >
+                <Checkbox checked={selected} disabled={disabled}>
+                  {choice.name} - Rp {choice.price}
+                </Checkbox>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ));
+  };
+
   const renderPriceWithCounter = () => {
+    const handleIncrease = () => {
+      handleQuantityChange(localQuantity + 1);
+    };
+
+    const handleDecrease = () => {
+      handleQuantityChange(localQuantity > 1 ? localQuantity - 1 : 1);
+    };
+
     return (
       <section className='container'>
         <div
@@ -233,7 +339,7 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
                 fontFamily: 'DM Sans',
               }}
             >
-              Rp {dish?.price}
+              {formatToIDRCurrency((Number(dish.price) || 0) * localQuantity)}
             </span>
           </div>
           <div
@@ -244,20 +350,16 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
           >
             <button
               style={{padding: '20px'}}
-              onClick={() => {
-                removeFromCart(dish);
-              }}
+              onClick={handleDecrease}
             >
               <MinusSvg />
             </button>
 
-            <span className='t14'>{quantity}</span>
+            <span className='t14'>{localQuantity}</span>
 
             <button
               style={{padding: '20px'}}
-              onClick={() => {
-                addToCart(dish);
-              }}
+              onClick={handleIncrease}
             >
               <PlusSvg />
             </button>
@@ -267,6 +369,18 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
     );
   };
 
+  const validateOptions = () => {
+    for (const [category, optionData] of Object.entries(options)) {
+      if (!optionData.optional) {
+        const selected = selectedOptions[category] || [];
+        if (selected.length < optionData.max) {
+          return false; // Validation fails if required options are not fully selected
+        }
+      }
+    }
+    return true; // Validation passes
+  };
+
   const renderButton = () => {
     return (
       <section
@@ -274,8 +388,27 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
         style={{paddingTop: 10, paddingBottom: 20}}
       >
         <components.Button
-          label='+ Add to cart'
-          onClick={() => addToCart({...dish, notes})}
+          label='Add Order'
+          onClick={() => {
+            if (!validateOptions()) {
+              messages.info('Pilih mau di-custom seperti apa');
+              return;
+            }
+            addToCart({
+              ...dish,
+              quantity: localQuantity,
+              notes,
+              selectedOptions: Object.entries(selectedOptions).map(([name, selected]) => ({
+                name,
+                selected,
+                price: selected.length * 5000, // Example price calculation
+              })),
+            });
+            setScreen(TabScreens.ORDER);
+            if (pathname !== Routes.TAB_NAVIGATOR) {
+              router.push(Routes.TAB_NAVIGATOR);
+            }
+          }}
           containerStyle={{marginBottom: 10}}
         />
       </section>
@@ -283,7 +416,9 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
   };
 
   const renderContent = () => {
+    if (isLoading) return null;
     return (
+      
       <div
         className='scrollable'
         style={{
@@ -292,10 +427,37 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
           flexDirection: 'column',
         }}
       >
+        {contextHolder}
         {renderImage()}
         {renderDetails()}
-        {renderPriceWithCounter()}
-        {renderButton()}
+        {renderOptions()}
+        {renderNote()}
+      </div>
+    );
+  };
+
+  const renderLoader = () => {
+    if (!isLoading) return null;
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          inset: 0,
+          height: '100%',
+        }}
+        className='flex-center'
+      >
+        <PuffLoader
+          size={40}
+          color={'#455A81'}
+          aria-label='Loading Spinner'
+          data-testid='loader'
+          speedMultiplier={1}
+        />
       </div>
     );
   };
@@ -304,6 +466,9 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
     <components.Screen>
       {renderHeader()}
       {renderContent()}
+      {renderPriceWithCounter()}
+      {renderButton()}
+      {renderLoader()}
     </components.Screen>
   );
 };
