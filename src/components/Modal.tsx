@@ -1,11 +1,11 @@
 'use client';
 
-import Image from 'next/image';
+// import Image from 'next/image';
 import React, {useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 
 import {svg} from '../svg';
-import {URLS} from '../config';
+// import {URLS} from '../config';
 import {Routes} from '../routes';
 import {stores} from '../stores';
 import {Switcher} from './Switcher';
