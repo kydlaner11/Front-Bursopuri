@@ -1,24 +1,49 @@
 'use client';
 
-import Image from 'next/image';
-import React, {useState} from 'react';
-import {Swiper, SwiperSlide} from 'swiper/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import PuffLoader from 'react-spinners/PuffLoader';
 import { useTableNumber } from '../hooks/useTableNumber';
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import React, { useState, Suspense } from 'react';
+import Image from 'next/image';
 
+import { hooks } from '../hooks';
+import { Routes } from '../routes';
+import { components } from '../components';
+import { useSession } from '../hooks/useSession';
 
-import {hooks} from '../hooks';
-import {Routes} from '../routes';
-import {components} from '../components';
-import {useSession} from '../hooks/useSession';
+// Loading component that will be used as fallback
+const LoadingSpinner = () => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        inset: 0,
+        height: '100%',
+      }}
+      className='flex-center'
+    >
+      <PuffLoader
+        size={40}
+        color={'#455A81'}
+        aria-label='Loading Spinner'
+        data-testid='loader'
+        speedMultiplier={1}
+      />
+    </div>
+  );
+};
 
-export const Onboarding: React.FC = () => {
+// Content component that uses the hooks requiring Suspense
+const OnboardingContent: React.FC = () => {
   const router = useRouter();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const {tableNumber} = useTableNumber();
-  const {sessionId} = useSession();
-  const {onboarding: onboardingData, onboardingLoading} =
+  const { tableNumber } = useTableNumber();
+  const { sessionId } = useSession();
+  const { onboarding: onboardingData, onboardingLoading } =
     hooks.useGetOnboarding();
 
   const renderCarousel = () => {
@@ -40,7 +65,7 @@ export const Onboarding: React.FC = () => {
           {onboardingData.map((item) => (
             <SwiperSlide
               key={item.id}
-              style={{width: '100%', height: 'auto'}}
+              style={{ width: '100%', height: 'auto' }}
             >
               <Image
                 src={item.image}
@@ -49,7 +74,7 @@ export const Onboarding: React.FC = () => {
                 height={0}
                 sizes='100vw'
                 priority={true}
-                style={{width: '90%', height: 'auto', margin: '0 auto', borderRadius: 10}}
+                style={{ width: '90%', height: 'auto', margin: '0 auto', borderRadius: 10 }}
               />
             </SwiperSlide>
           ))}
@@ -95,7 +120,7 @@ export const Onboarding: React.FC = () => {
     return (
       <section
         className='container'
-        style={{marginBottom: 20}}
+        style={{ marginBottom: 20 }}
       >
         <div
           style={{
@@ -105,15 +130,15 @@ export const Onboarding: React.FC = () => {
             paddingBottom: '10%',
           }}
         >
-          <h1 style={{textAlign: 'center', textTransform: 'capitalize'}}>
+          <h1 style={{ textAlign: 'center', textTransform: 'capitalize' }}>
             {currentItem.title1}
           </h1>
-          <h1 style={{textAlign: 'center', textTransform: 'capitalize'}}>
+          <h1 style={{ textAlign: 'center', textTransform: 'capitalize' }}>
             {currentItem.title2}
           </h1>
           <p
             className='t16'
-            style={{marginTop: '14px', color: '#B4B4C6', textAlign: 'center'}}
+            style={{ marginTop: '14px', color: '#B4B4C6', textAlign: 'center' }}
           >
             {currentItem.description1} <br />
             {currentItem.description2}
@@ -129,13 +154,12 @@ export const Onboarding: React.FC = () => {
     return (
       <section
         className='container'
-        style={{padding: '0 20px 20px 20px'}}
+        style={{ padding: '0 20px 20px 20px' }}
       >
         <components.Button
           label='Get Started'
           onClick={() => {
             router.push(Routes.TAB_NAVIGATOR);
-            sessionId;
           }}
         />
       </section>
@@ -145,33 +169,13 @@ export const Onboarding: React.FC = () => {
   const renderLoader = () => {
     if (!onboardingLoading) return null;
 
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'absolute',
-          inset: 0,
-          height: '100%',
-        }}
-        className='flex-center'
-      >
-        <PuffLoader
-          size={40}
-          color={'#455A81'}
-          aria-label='Loading Spinner'
-          data-testid='loader'
-          speedMultiplier={1}
-        />
-      </div>
-    );
+    return <LoadingSpinner />;
   };
 
   const renderTableInfo = () => {
     if (tableNumber) {
       return (
-        <div 
+        <div
           style={{
             position: 'absolute',
             top: 20,
@@ -202,5 +206,14 @@ export const Onboarding: React.FC = () => {
       {renderButton()}
       {renderLoader()}
     </components.Screen>
+  );
+};
+
+// Main component with Suspense boundary
+export const Onboarding: React.FC = () => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <OnboardingContent />
+    </Suspense>
   );
 };
