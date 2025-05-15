@@ -1,20 +1,21 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import Image from 'next/image';
-import {useRouter, useSearchParams} from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 
-import {Routes} from '../../routes';
-import {stores} from '../../stores';
-import {components} from '../../components';
-import {formatToIDRCurrency} from '../../utils/currencyFormatter';
+import { Routes } from '../../routes';
+import { stores } from '../../stores';
+import { components } from '../../components';
+import { formatToIDRCurrency } from '../../utils/currencyFormatter';
 import { Spin } from 'antd';
 
-export const OrderWaiting: React.FC = () => {
-  const {resetCart, orderType} = stores.useCartStore();
+// Create a separate component to use search params
+const OrderWaitingContent = () => {
+  const { resetCart, orderType } = stores.useCartStore();
   const router = useRouter();
-   const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
 
   const orderId = searchParams.get('orderId');
   const queueNumber = searchParams.get('queue');
@@ -25,27 +26,26 @@ export const OrderWaiting: React.FC = () => {
   }
 
   useEffect(() => {
-      if (!orderId) return;
+    if (!orderId) return;
 
-      const interval = setInterval(async () => {
-        try {
-          const response = await axios.get(`http://localhost:3002/bursopuri/order/${orderId}/status`);
-          const status = response.data?.data?.status;
+    const interval = setInterval(async () => {
+      try {
+        const response = await axios.get(`http://localhost:3002/bursopuri/order/${orderId}/status`);
+        const status = response.data?.data?.status;
 
-          console.log('Current status:', status);
+        console.log('Current status:', status);
 
-          if (status === 'IN_PROGRESS') {
-            clearInterval(interval); // Stop polling
-            router.push(Routes.ORDER_SUCCESSFUL);
-          }
-        } catch (error) {
-          console.error('Error checking status:', error);
+        if (status === 'IN_PROGRESS') {
+          clearInterval(interval); // Stop polling
+          router.push(Routes.ORDER_SUCCESSFUL);
         }
-      }, 5000); // Poll every 5 seconds
+      } catch (error) {
+        console.error('Error checking status:', error);
+      }
+    }, 5000); // Poll every 5 seconds
 
-      return () => clearInterval(interval); // Cleanup on unmount
-    }, [orderId, router]);
-
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [orderId, router]);
 
   const renderHeader = () => {
     return (
@@ -59,9 +59,9 @@ export const OrderWaiting: React.FC = () => {
     return (
       <main
         className='scrollable container'
-        style={{paddingTop: 10}}
+        style={{ paddingTop: 10 }}
       >
-        <div style={{marginBottom: 10}}>
+        <div style={{ marginBottom: 10 }}>
           <components.Tag
             label='Order Type'
             value={orderType === 'dine_in' ? 'Dine in' : orderType}
@@ -176,25 +176,6 @@ export const OrderWaiting: React.FC = () => {
               Duduk dan tunggu notifikasi pesanan siap.
             </p>
           </div>
-
-          {/* Checkbox
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'flex-start',
-            marginTop: 10,
-            marginBottom: 15
-          }}>
-            <input 
-              type="checkbox" 
-              id="agreement" 
-              style={{ marginRight: 10, marginTop: 3 }} 
-            />
-            <label htmlFor="agreement" style={{ fontSize: 14, color: '#666' }}>
-              Saya menyetujui syarat dan ketentuan transaksi ini.
-            </label>
-          </div>
-           */}
-
         </section>
       </main>
     );
@@ -202,15 +183,7 @@ export const OrderWaiting: React.FC = () => {
 
   const renderButtons = () => {
     return (
-      <section style={{padding: 20}}> {/* Hidden in Figma design */}
-        {/* <components.Button
-          label='New order'
-          containerStyle={{marginBottom: 14}}
-          onClick={() => {
-            resetCart();
-            router.push(Routes.TAB_NAVIGATOR);
-          }}
-        /> */}
+      <section style={{ padding: 20 }}> {/* Hidden in Figma design */}
         <components.Button
           onClick={() => {
             resetCart();
@@ -229,5 +202,19 @@ export const OrderWaiting: React.FC = () => {
       {renderContent()}
       {renderButtons()}
     </components.Screen>
+  );
+};
+
+// Loading fallback component
+const LoadingFallback = () => {
+  return <Spin size="large" fullscreen />;
+};
+
+// Main component that uses Suspense
+export const OrderWaiting: React.FC = () => {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <OrderWaitingContent />
+    </Suspense>
   );
 };
