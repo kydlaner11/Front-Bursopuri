@@ -5,6 +5,8 @@ import React, {useState} from 'react';
 import {hooks} from '../../hooks';
 import {Routes} from '../../routes';
 import {components} from '../../components';
+import { formatToIDRCurrency } from '@/utils/currencyFormatter';
+
 
 export const OrderHistory: React.FC = () => {
   const {orders} = hooks.useGetOrders();
@@ -91,7 +93,19 @@ export const OrderHistory: React.FC = () => {
                         className='t14'
                         style={{fontWeight: 500, color: 'var(--main-dark)'}}
                       >
-                        Rp {order.total}
+                        {formatToIDRCurrency(order.total)}
+                      </span>
+                    </section>
+                    <section>
+                      <span
+                        className='t14'
+                        style={{
+                          fontWeight: 800,
+                          color: 'var(--main-turquoise)',
+                          fontSize: '40px',
+                        }}
+                      >
+                        {order.queueNumber}
                       </span>
                     </section>
                     <section
@@ -107,9 +121,9 @@ export const OrderHistory: React.FC = () => {
                           padding: '3px 8px',
                           borderRadius: 5,
                           backgroundColor:
-                            order.status === 'delivered'
+                            order.status === 'in_progress'
                               ? '#00B0B9'
-                              : order.status === 'shipping'
+                              : order.status === 'done'
                               ? '#FFA462'
                               : '#FA5555',
                           color: '#fff',
@@ -118,7 +132,11 @@ export const OrderHistory: React.FC = () => {
                         }}
                         className='t10'
                       >
-                        {order.status}
+                        {order.status === 'in_progress'
+                          ? 'Pesanan Diproses'
+                          : order.status === 'done'
+                          ? 'Pesanan Selesai'
+                          : 'Cancelled'}
                       </span>
                     </section>
                   </summary>
@@ -140,12 +158,12 @@ export const OrderHistory: React.FC = () => {
                               style={{marginLeft: 'auto'}}
                               className='t14'
                             >
-                              {product.quantity} x Rp {product.price}
+                              {product.quantity} x {formatToIDRCurrency(product.price)}
                             </span>
                           </li>
                         );
                       })}
-                      <li
+                      {/* <li
                         style={{
                           marginBottom: 8,
                           display: 'flex',
@@ -167,18 +185,18 @@ export const OrderHistory: React.FC = () => {
                       >
                         <span className='t14'>Delivery</span>
                         <span className='t14'>Rp {order.delivery}</span>
-                      </li>
+                      </li> */}
                     </ul>
                   </section>
                 </details>
-                {isOpen && order.status === 'shipping' && (
+                {/* {isOpen && order.status === 'in_progress' && (
                   <components.Button
                     label='track order'
                     containerStyle={{marginBottom: 20}}
                     href={Routes.TRACK_YOUR_ORDER}
                   />
-                )}
-                {isOpen && order.status !== 'shipping' && (
+                )} */}
+                {isOpen && order.status === 'done' && (
                   <div
                     className='row-center'
                     style={{
