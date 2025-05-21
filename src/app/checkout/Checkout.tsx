@@ -3,7 +3,6 @@
 import React from 'react';
 
 // import {svg} from '../../svg';
-import axios from 'axios';
 import {useRouter} from 'next/navigation'
 import {Routes} from '../../routes';
 import {stores} from '../../stores';
@@ -11,8 +10,7 @@ import {components} from '../../components';
 import { FormOutlined, DownOutlined, UpOutlined   } from '@ant-design/icons';
 import { formatToIDRCurrency } from '@/utils/currencyFormatter';
 import { message, Form, Input, Spin } from 'antd';
-
-
+import Api from '../../api'; // tambahkan import Api
 
 export const Checkout: React.FC = () => {
   const router = useRouter();
@@ -70,11 +68,7 @@ export const Checkout: React.FC = () => {
       console.log('Sending order to API:', orderPayload);
       
       // Send the order to the API
-      const response = await axios.post('http://localhost:3002/bursopuri/order', orderPayload, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
+      const response = await Api.post('/bursopuri/order', orderPayload); // gunakan Api
   
       const responseData = response.data.data;
       console.log('Order successfully placed:', responseData);

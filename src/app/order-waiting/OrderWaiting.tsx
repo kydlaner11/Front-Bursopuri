@@ -10,6 +10,7 @@ import { stores } from '../../stores';
 import { components } from '../../components';
 import { formatToIDRCurrency } from '../../utils/currencyFormatter';
 import { Spin } from 'antd';
+import Api from '../../api'; // tambahkan import Api
 
 // Create a separate component to use search params
 const OrderWaitingContent = () => {
@@ -30,7 +31,7 @@ const OrderWaitingContent = () => {
 
     const interval = setInterval(async () => {
       try {
-        const response = await axios.get(`http://localhost:3002/bursopuri/order/${orderId}/status`);
+        const response = await Api.get(`/bursopuri/order/${orderId}/status`); // gunakan Api
         const status = response.data?.data?.status;
 
         console.log('Current status:', status);
