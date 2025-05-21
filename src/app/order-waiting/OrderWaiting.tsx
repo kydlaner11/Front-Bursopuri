@@ -3,8 +3,6 @@
 import React, { Suspense, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
-
 import { Routes } from '../../routes';
 import { stores } from '../../stores';
 import { components } from '../../components';
