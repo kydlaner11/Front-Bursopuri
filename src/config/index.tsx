@@ -13,7 +13,7 @@ const GET_PROMOCODES = `${URL_HELP}/api/promocodes.json`;
 const GET_NOTIFICATIONS = `${URL_HELP}/api/notifications.json`;
 
 export const URLS = {
-  MAIN_URL,
+  URL_HELP,
   GET_MENU,
   GET_DISHES,
   GET_ORDERS,

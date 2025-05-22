@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { hooks } from '../hooks';
 import { Routes } from '../routes';
 import { components } from '../components';
-// import { useSession } from '../hooks/useSession';
+import { useSession } from '../hooks/useSession';
 
 // Loading component that will be used as fallback
 const LoadingSpinner = () => {
@@ -42,7 +42,7 @@ const OnboardingContent: React.FC = () => {
   const router = useRouter();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const { tableNumber } = useTableNumber();
-  // const { sessionId } = useSession();
+  const { sessionId } = useSession();
   const { onboarding: onboardingData, onboardingLoading } =
     hooks.useGetOnboarding();
 
@@ -160,6 +160,7 @@ const OnboardingContent: React.FC = () => {
           label='Get Started'
           onClick={() => {
             router.push(Routes.TAB_NAVIGATOR);
+            {sessionId}
           }}
         />
       </section>
@@ -190,7 +191,6 @@ const OnboardingContent: React.FC = () => {
           }}
         >
           Meja #{tableNumber}
-          {/* {sessionId}zxxxxx */}
         </div>
       );
     }
