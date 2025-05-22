@@ -34,7 +34,7 @@ export const OrderEmpty: React.FC = () => {
           }}
         >
           <Image
-            src={`${URLS.MAIN_URL}/assets/images/02.jpg`}
+            src={`${URLS.URL_HELP}/assets/images/02.jpg`}
             alt='profile'
             width={290}
             height={290}

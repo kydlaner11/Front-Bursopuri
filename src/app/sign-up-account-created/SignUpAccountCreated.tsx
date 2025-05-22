@@ -26,7 +26,7 @@ export const SignUpAccountCreated: React.FC = () => {
           className='container'
         >
           <Image
-            src={`${URLS.MAIN_URL}/assets/images/12.jpg`}
+            src={`${URLS.URL_HELP}/assets/images/12.jpg`}
             alt='Account created'
             width={0}
             height={0}

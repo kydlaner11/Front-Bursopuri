@@ -42,7 +42,7 @@ export const OrderSuccessful: React.FC = () => {
           }}
         >
           <Image
-            src={`${URLS.MAIN_URL}/assets/images/03.jpg`}
+            src={`${URLS.URL_HELP}/assets/images/03.jpg`}
             alt='profile'
             width={0}
             height={0}

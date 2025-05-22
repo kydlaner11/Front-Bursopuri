@@ -41,7 +41,7 @@ export const EditProfile: React.FC = () => {
             className='center clickable'
           >
             <Image
-              src={`${URLS.MAIN_URL}/assets/users/01.jpg`}
+              src={`${URLS.URL_HELP}/assets/users/01.jpg`}
               alt='profile'
               width={0}
               height={0}

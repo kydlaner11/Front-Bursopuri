@@ -37,7 +37,7 @@ export const PromocodesEmpty: React.FC = () => {
           }}
         >
           <Image
-            src={`${URLS.MAIN_URL}/assets/images/04.jpg`}
+            src={`${URLS.URL_HELP}/assets/images/04.jpg`}
             alt='Account created'
             width={0}
             height={0}

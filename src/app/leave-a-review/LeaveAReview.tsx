@@ -46,7 +46,7 @@ export const LeaveAReview: React.FC = () => {
               width: '60%',
               height: 'auto',
             }}
-            src={`${URLS.MAIN_URL}/assets/images/08.jpg`}
+            src={`${URLS.URL_HELP}/assets/images/08.jpg`}
           />
           <h2
             style={{

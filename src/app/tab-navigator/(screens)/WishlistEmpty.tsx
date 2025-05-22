@@ -33,7 +33,7 @@ export const WishListEmpty: React.FC = () => {
           }}
         >
           <Image
-            src={`${URLS.MAIN_URL}/assets/images/01.jpg`}
+            src={`${URLS.URL_HELP}/assets/images/01.jpg`}
             alt='profile'
             width={290}
             height={290}

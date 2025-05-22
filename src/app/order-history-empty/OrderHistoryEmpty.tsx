@@ -36,7 +36,7 @@ export const OrderHistoryEmpty: React.FC = () => {
           className='center'
         >
           <Image
-            src={`${URLS.MAIN_URL}/assets/images/10.jpg`}
+            src={`${URLS.URL_HELP}/assets/images/10.jpg`}
             alt='Account created'
             width={0}
             height={0}

@@ -145,7 +145,7 @@ export const Modal: React.FC = () => {
             alt='user'
             style={{borderRadius: 30}}
             priority={true}
-            src={`${URLS.MAIN_URL}/assets/users/01.jpg`}
+            src={`${URLS.URL_HELP}/assets/users/01.jpg`}
           /> */}
           <div
             style={{
