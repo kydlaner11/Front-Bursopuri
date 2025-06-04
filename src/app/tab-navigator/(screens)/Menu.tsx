@@ -3,13 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Spin } from 'antd';
 
 import {hooks} from '../../../hooks';
 import {Routes} from '../../../routes';
 import {components} from '../../../components';
 
 export const Menu: React.FC = () => {
-  const {menu} = hooks.useGetMenu();
+  const {menu, menuLoading} = hooks.useGetMenu();
 
   const renderHeader = () => {
     return (
@@ -22,6 +23,13 @@ export const Menu: React.FC = () => {
   };
 
   const renderContent = () => {
+    if (menuLoading) {
+      return (
+        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh'}}>
+          <Spin size="large" />
+        </div>
+      );
+    }
     return (
       <main
         className='scrollable container'

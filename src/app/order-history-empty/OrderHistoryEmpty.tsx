@@ -8,14 +8,14 @@ import {Routes} from '../../routes';
 import {components} from '../../components';
 
 export const OrderHistoryEmpty: React.FC = () => {
-  const renderHeader = () => {
-    return (
-      <components.Header
-        showGoBack={true}
-        title='Order history'
-      />
-    );
-  };
+  // const renderHeader = () => {
+  //   return (
+  //     <components.Header
+  //       showGoBack={true}
+  //       title='Order history'
+  //     />
+  //   );
+  // };
 
   const renderContent = () => {
     return (
@@ -70,7 +70,7 @@ export const OrderHistoryEmpty: React.FC = () => {
 
   return (
     <components.Screen>
-      {renderHeader()}
+      {/* {renderHeader()} */}
       {renderContent()}
       {renderButton()}
     </components.Screen>

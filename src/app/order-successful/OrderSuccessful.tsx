@@ -62,13 +62,13 @@ export const OrderSuccessful: React.FC = () => {
               textTransform: 'capitalize',
             }}
           >
-            Thank you for <br /> your order!
+            Terima kasih atas <br /> pesanan Anda!
           </h2>
           <p
             style={{textAlign: 'center'}}
             className='t16'
-          >
-            Your order will be delivered on time. <br /> Thank you!
+          > 
+            Pesanan Anda akan dikirim tepat waktu. <br /> Terima kasih!
           </p>
         </section>
       </main>
@@ -79,7 +79,7 @@ export const OrderSuccessful: React.FC = () => {
     return (
       <section style={{padding: 20}}>
         <components.Button
-          label='New order'
+          label='Pesan Lagi'
           containerStyle={{marginBottom: 14}}
           onClick={() => {
             resetCart();
@@ -91,7 +91,7 @@ export const OrderSuccessful: React.FC = () => {
             resetCart();
             router.push(Routes.ORDER_HISTORY); 
           }}
-          label='View orders'
+          label='Lihat Pesanan'
           colorScheme='secondary'
         />
       </section>

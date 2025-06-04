@@ -140,8 +140,8 @@ const OnboardingContent: React.FC = () => {
             className='t16'
             style={{ marginTop: '14px', color: '#B4B4C6', textAlign: 'center' }}
           >
-            {currentItem.description1} <br />
-            {currentItem.description2}
+            {currentItem.description1}
+            {/* {currentItem.description2} */}
           </p>
         </div>
       </section>

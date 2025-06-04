@@ -216,8 +216,8 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
             marginBottom: 5,
           }}
         >
-          <Title level={5}>Notes</Title>
-          <p className="option-subtext">Optional</p>
+          <Title level={5}>Pesan</Title>
+          <p className="option-subtext">Opsional</p>
         </div>
         <components.Textarea
           value={notes}
@@ -388,7 +388,7 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
         style={{paddingTop: 10, paddingBottom: 20}}
       >
         <components.Button
-          label='Add Order'
+          label='Tambahkan ke Keranjang'
           onClick={() => {
             if (!validateOptions()) {
               messages.info('Pilih mau di-custom seperti apa');

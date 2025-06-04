@@ -105,7 +105,7 @@ export const Checkout: React.FC = () => {
         {contextHolder}
         {<div style={{marginBottom: 10}}>
           <components.Tag
-            label='Order Type'
+            label='Tipe Pesanan'
             value={orderType} // Display the current order type
           />
         </div>}
@@ -130,7 +130,7 @@ export const Checkout: React.FC = () => {
               color:  'var(--main-turquoise)',
             }}
           >
-            Pay at cashier
+            Bayar di Kasir
           </span>
           {/* <div style={{ display: 'flex', gap: 10 }}>
             <button
@@ -187,7 +187,7 @@ export const Checkout: React.FC = () => {
               className='t18'
               style={{color: 'var(--main-dark)', textTransform: 'capitalize', gap: 10, display: 'flex', alignItems: 'center'}}
             >
-              My order <span style={{ fontSize: '12px' }}>{isOrderExpanded ? <UpOutlined /> : <DownOutlined />}</span>
+              Pesanan Saya <span style={{ fontSize: '12px' }}>{isOrderExpanded ? <UpOutlined /> : <DownOutlined />}</span>
             </span>
             </button>
             <span
@@ -250,11 +250,11 @@ export const Checkout: React.FC = () => {
                     >
                       {expandedItem === index ? (
                         <span style={{ color: 'var(--secondary-text-color)', gap: 10, display: 'flex', alignItems: 'center'}}>
-                          Hide Details <UpOutlined />
+                          Sembunyikan <UpOutlined />
                         </span>
                       ) : (
                         <span style={{ color: 'var(--secondary-text-color)', gap: 10, display: 'flex', alignItems: 'center'}}>
-                          View Details <DownOutlined />
+                          Lihat Detail <DownOutlined />
                         </span>
                       )}
                     </button>
@@ -325,10 +325,10 @@ export const Checkout: React.FC = () => {
                 textTransform: 'capitalize',
               }}
             >
-              Payment Information
+              Informasi Pembayaran
             </span>
             <span className='t12'>
-              The data is used for order process. Make sure you enter valid data.
+              Data ini digunakan untuk proses pemesanan. Pastikan Anda memasukkan data yang valid.
             </span>
              <Form
               id="checkout-form"
@@ -341,14 +341,14 @@ export const Checkout: React.FC = () => {
               <Form.Item name="customerName">
                 <Input 
                   size="large" 
-                  placeholder="Full Name" 
+                  placeholder="Nama Lengkap" 
                 />
               </Form.Item>
               
               <Form.Item name="customerPhone">
                 <Input 
                   size="large" 
-                  placeholder="Phone Number" 
+                  placeholder="Nomor Telepon" 
                 />
               </Form.Item>
               

@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 // import {svg} from '../svg';
 import {Routes} from '../routes';
-import {stores} from '../stores';
+// import {stores} from '../stores';
 import {DishType} from '../types';
 import { formatToIDRCurrency } from '@/utils/currencyFormatter';
 import { useRouter } from 'next/navigation';
@@ -14,33 +14,33 @@ type Props = {
   isLast: boolean;
 };
 
-const PlusSvg = () => {
-  return (
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      width={21}
-      height={21}
-      fill='none'
-    >
-      <rect
-        width={21}
-        height={21}
-        fill='#E6F3F8'
-        rx={10.5}
-      />
-      <path
-        stroke='#0C1D2E'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth={1.2}
-        d='M10.5 6.125v8.75M6.125 10.5h8.75'
-      />
-    </svg>
-  );
-};
+// const PlusSvg = () => {
+//   return (
+//     <svg
+//       xmlns='http://www.w3.org/2000/svg'
+//       width={21}
+//       height={21}
+//       fill='none'
+//     >
+//       <rect
+//         width={21}
+//         height={21}
+//         fill='#E6F3F8'
+//         rx={10.5}
+//       />
+//       <path
+//         stroke='#0C1D2E'
+//         strokeLinecap='round'
+//         strokeLinejoin='round'
+//         strokeWidth={1.2}
+//         d='M10.5 6.125v8.75M6.125 10.5h8.75'
+//       />
+//     </svg>
+//   );
+// };
 
 export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
-  const {list: cart} = stores.useCartStore();
+  // const {list: cart} = stores.useCartStore();
   const router = useRouter();
   const formattedPrice = formatToIDRCurrency(Number(dish.price));
   // const {
@@ -49,7 +49,7 @@ export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
   //   removeFromWishlist,
   // } = stores.useWishlistStore();
 
-  const qty = cart.find((item) => item.id === dish.id)?.quantity ?? 0;
+  // const qty = cart.find((item) => item.id === dish.id)?.quantity ?? 0;
   // const ifInWishlist = wishlist.find((item) => item.id === dish.id);
 
   return (
@@ -127,12 +127,12 @@ export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
         >
           {dish.description}
         </p>
-        <span
+        {/* <span
           className='t10'
           style={{marginBottom: 8}}
         >
           {dish.kcal} kcal - {dish.weight}g
-        </span>
+        </span> */}
         <span
           className='t14'
           style={{
@@ -162,48 +162,30 @@ export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
       >
         <svg.HeartSvg dish={dish} />
       </button> */}
-      {qty > 0 && (
-        <div
-          style={{
-            position: 'absolute',
-            right: 0,
-            bottom: 0,
-            height: 21,
-            minWidth: 21,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: 14,
-            borderRadius: 12,
-            backgroundColor: 'var(--main-turquoise)',
-          }}
-        >
-          <span
-            className='t14'
-            style={{color: 'var(--white-color)'}}
-          >
-            {qty}
-          </span>
-        </div>
-      )}
-      {qty === 0 && (
-        <button
-          style={{
-            position: 'absolute',
-            right: 0,
-            bottom: 0,
-            padding: 14,
-            borderRadius: 4,
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            router.push(Routes.MENU_ITEM + `/${dish.id}`);
-          }}
-        >
-          <PlusSvg />
-        </button>
-      )}
+      <button
+        style={{
+          position: 'absolute',
+          right: 5,
+          bottom: 10,
+          padding: '10px 18px',
+          borderRadius: 8,
+          backgroundColor: 'var(--main-turquoise)',
+          color: 'var(--white-color)',
+          border: 'none',
+          fontWeight: 600,  
+          fontSize: 12,
+          cursor: 'pointer',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+          transition: 'background 0.2s',
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          router.push(Routes.MENU_ITEM + `/${dish.id}`);
+        }}
+      >
+        Tambah Pesanan
+      </button>
     </li>
   );
 };

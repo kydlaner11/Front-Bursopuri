@@ -15,7 +15,7 @@ export const Order: React.FC = () => {
     return (
       <components.Header
         user={true}
-        title='Order'
+        title='Pesanan'
         showBasket={true}
       />
     );
@@ -30,7 +30,7 @@ export const Order: React.FC = () => {
         {/* Order Type */}
         <div style={{marginBottom: 30, marginTop: 10}}>
           <components.Tag
-            label='Order Type'
+            label='Tipe Pesanan'
             value={orderType} // Display the current order type
           />
         </div>
@@ -97,7 +97,7 @@ export const Order: React.FC = () => {
                 className='t16'
                 style={{color: 'var(--main-dark)', fontWeight: 800}}
               >
-                Payment Detail
+                Detail Pembayaran
               </span>
             </li>
             <li

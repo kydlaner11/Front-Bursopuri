@@ -53,14 +53,13 @@ export const OrderEmpty: React.FC = () => {
               textTransform: 'capitalize',
             }}
           >
-            Your cart is empty!
+            Belum Ada Pesanan
           </h2>
           <p
             style={{textAlign: 'center'}}
             className='t16'
           >
-            Looks like you haven't made <br />
-            your order yet.
+            Silakan pilih menu yang ingin Anda pesan. <br/> Anda dapat melihat pesanan Anda di sini.
           </p>
         </section>
       </main>
@@ -72,7 +71,7 @@ export const OrderEmpty: React.FC = () => {
       <section style={{padding: '10px 20px 0 20px'}}>
         <components.Button
           href={`${Routes.MENU_LIST}/all`}
-          label='Shop now'
+          label='Pesan Sekarang'
         />
       </section>
     );

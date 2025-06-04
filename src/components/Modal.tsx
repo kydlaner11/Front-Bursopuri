@@ -19,16 +19,16 @@ const modalMenu = [
   // },
   {
     id: 2,
-    title: 'My orders',
+    title: 'Histori Pesanan',
     route: Routes.ORDER_HISTORY,
     switch: false,
   },
-  {
-    id: 3,
-    title: 'My orders Empty',
-    route: Routes.ORDER_HISTORY_EMPTY,
-    switch: false,
-  },
+  // {
+  //   id: 3,
+  //   title: 'My orders Empty',
+  //   route: Routes.ORDER_HISTORY_EMPTY,
+  //   switch: false,
+  // },
   // {
   //   id: 4,
   //   title: 'Promocodes & gift cards',
@@ -41,12 +41,12 @@ const modalMenu = [
   //   route: Routes.PROMOCODES_EMPTY,
   //   switch: false,
   // },
-  // {
-  //   id: 6,
-  //   title: 'Onboarding',
-  //   route: Routes.ONBOARDING,
-  //   switch: false,
-  // },
+  {
+    id: 6,
+    title: 'Onboarding',
+    route: Routes.ONBOARDING,
+    switch: false,
+  },
   // {
   //   id: 7,
   //   title: 'Notifications',
@@ -59,12 +59,12 @@ const modalMenu = [
   //   route: '',
   //   switch: true,
   // },
-  {
-    id: 9,
-    title: 'Support center',
-    route: '',
-    switch: false,
-  },
+  // {
+  //   id: 9,
+  //   title: 'Support center',
+  //   route: '',
+  //   switch: false,
+  // },
   // {
   //   id: 10,
   //   title: 'Sign out',
@@ -171,7 +171,7 @@ export const Modal: React.FC = () => {
             >
               Guest
             </span>
-            <span className='t14'>Welcome to bursopuri App</span>
+            <span className='t14'>Selamat datang di Bursopuri App</span>
           </div>
            {/* <div
             style={{
@@ -217,7 +217,7 @@ export const Modal: React.FC = () => {
                   justifyContent: 'space-between',
                 }}
                 onClick={() => {
-                  if (item.route !== '') {
+                  if (item.route) {
                     closeModal();
                     router.push(item.route);
                   }
@@ -234,7 +234,7 @@ export const Modal: React.FC = () => {
                 >
                   {item.title}
                 </span>
-                {item.route !== '' && item.title !== 'Sign out' && (
+                {item.route && item.title !== 'Sign out' && (
                   <svg.RightArrowSvg />
                 )}
                 {item.switch && <Switcher />}

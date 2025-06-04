@@ -6,6 +6,7 @@ import {hooks} from '../../hooks';
 import {Routes} from '../../routes';
 import {components} from '../../components';
 import { formatToIDRCurrency } from '@/utils/currencyFormatter';
+import {OrderHistoryEmpty} from '../order-history-empty/OrderHistoryEmpty';
 
 
 export const OrderHistory: React.FC = () => {
@@ -37,6 +38,10 @@ export const OrderHistory: React.FC = () => {
   };
 
   const renderContent = () => {
+    // Jika orders kosong, tampilkan OrderHistoryEmpty
+    if (!orders || orders.length === 0) {
+      return <OrderHistoryEmpty />;
+    }
     return (
       <main className='scrollable container'>
         <section

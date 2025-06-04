@@ -5,6 +5,7 @@ import Image from 'next/image';
 import React, {useState} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import PuffLoader from 'react-spinners/PuffLoader';
+import { Spin } from 'antd';
 
 import {svg} from '../../../svg';
 import {items} from '../../../items';
@@ -16,6 +17,7 @@ import {stores} from '../../../stores';
 export const Home: React.FC = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [recommendLoadingId, setRecommendLoadingId] = useState<string | null>(null);
 
   const {menu, menuLoading} = hooks.useGetMenu();
   const {dishes, dishesLoading} = hooks.useGetDishes();
@@ -68,7 +70,7 @@ export const Home: React.FC = () => {
         >
           <components.InputField
             inputType='search'
-            placeholder='Search ...'
+            placeholder='Cari Menu ...'
             containerStyle={{flex: 1, backgroundColor: 'var(--white-color)'}}
           />
         </Link>
@@ -179,7 +181,7 @@ export const Home: React.FC = () => {
             }}
             onClick={() => setShowModal(true)}
           >
-            <span className='h6'>Order Type</span>
+            <span className='h6'>Tipe Pesanan</span>
             <div
               style={{
                 display: 'flex',
@@ -221,7 +223,7 @@ export const Home: React.FC = () => {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 style={{marginBottom: 20}}>Order Type</h3>
+              <h3 style={{marginBottom: 20}}>Tipe Pesanan</h3>
               <div
                 className='clickable'
                 style={{
@@ -319,10 +321,19 @@ export const Home: React.FC = () => {
   };
 
   const renderRecommendedDishes = () => {
+    // Sorting dishes: available dishes first, then unavailable dishes
+    const sortedRecommendedDishes = dishes
+      .filter((dish) => dish.isRecommended)
+      .sort((a, b) => {
+        // Sort by availability: available items first (true comes before false)
+        if (a.tersedia === b.tersedia) return 0;
+        return a.tersedia ? -1 : 1;
+      });
+
     return (
       <section style={{marginBottom: 30}}>
         <components.BlockHeading
-          title='Recommended for you'
+          title='Rekomendasi untuk Anda'
           className='container'
           containerStyle={{marginBottom: 14}}
         />
@@ -333,15 +344,19 @@ export const Home: React.FC = () => {
           onSwiper={(swiper) => {}}
           style={{padding: '0 20px'}}
         >
-          {dishes
-            .filter((dish) => dish.isRecommended)
-            .map((dish) => {
-              return (
-                <SwiperSlide key={dish.id}>
-                  <items.RecommendedItem item={dish} />
-                </SwiperSlide>
-              );
-            })}
+          {sortedRecommendedDishes.map((dish) => {
+            return (
+              <SwiperSlide key={dish.id}>
+                <items.RecommendedItem
+                  item={dish}
+                  loading={recommendLoadingId === dish.id}
+                  onButtonClick={async () => {
+                    setRecommendLoadingId(dish.id);
+                  }}
+                />
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </section>
     );
@@ -433,6 +448,11 @@ export const Home: React.FC = () => {
       {renderModal()}
       {renderLoader()}
       {renderBottomTabBar()}
+       {isLoading && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Spin percent="auto" size="large" fullscreen/>
+      </div>
+      )}
     </components.Screen>
   );
 };

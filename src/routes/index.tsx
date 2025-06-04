@@ -1,7 +1,7 @@
 export enum TabScreens {
-  HOME = 'Home',
+  HOME = 'Beranda',
   MENU = 'Menu',
-  ORDER = 'Order',
+  ORDER = 'Pesanan',
   FAVORITE = 'Favorite',
   NOTIFICATIONS = 'Notifications',
 }
