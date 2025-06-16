@@ -157,7 +157,7 @@ const OnboardingContent: React.FC = () => {
         style={{ padding: '0 20px 20px 20px' }}
       >
         <components.Button
-          label='Get Started'
+          label='Masuk ke Menu'
           onClick={() => {
             router.push(Routes.TAB_NAVIGATOR);
             {sessionId}

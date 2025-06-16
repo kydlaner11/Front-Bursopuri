@@ -7,6 +7,7 @@ import {hooks} from '../../../hooks';
 import {Routes} from '../../../routes';
 import {components} from '../../../components';
 import type {DishType} from '../../../types';
+import Loading from '@/app/tab-navigator/loading';
 
 type Props = {
   category: string;
@@ -112,7 +113,7 @@ export const MenuList: React.FC<Props> = ({category}) => {
             const isAvailable = dish.tersedia !== false; // Default to true if undefined
             
             return (
-              <li key={dish.id} style={{ position: 'relative' }}>
+              <div key={dish.id} style={{ position: 'relative', listStyle: 'none' }}>
                 <div
                   style={{
                     opacity: isAvailable ? 1 : 0.6,
@@ -148,7 +149,7 @@ export const MenuList: React.FC<Props> = ({category}) => {
                     </div>
                   )}
                 </div>
-              </li>
+              </div>
             );
           })}
         </ul>
@@ -166,12 +167,18 @@ export const MenuList: React.FC<Props> = ({category}) => {
       </main>
     );
   };
+  
+  const renderLoader = () => {
+    if (!dishesLoading) return null;
+    return <Loading />;
+  }
 
   return (
     <components.Screen>
       {renderHeader()}
       {renderSearch()}
       {renderContent()}
+      {renderLoader()}
     </components.Screen>
   );
 };

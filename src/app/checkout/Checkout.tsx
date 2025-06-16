@@ -9,8 +9,11 @@ import {stores} from '../../stores';
 import {components} from '../../components';
 import { FormOutlined, DownOutlined, UpOutlined   } from '@ant-design/icons';
 import { formatToIDRCurrency } from '@/utils/currencyFormatter';
-import { message, Form, Input, Spin } from 'antd';
+import { message, Form, Input } from 'antd';
+import PuffLoader from 'react-spinners/PuffLoader';
 import Api from '../../api'; // tambahkan import Api
+import {svg} from '../../svg';
+
 
 export const Checkout: React.FC = () => {
   const router = useRouter();
@@ -194,7 +197,7 @@ export const Checkout: React.FC = () => {
               className='t18'
               style={{color: 'var(--main-dark)'}}
             >
-              Rp {total}
+             {formatToIDRCurrency(total)}
             </span>
           </div>
           {isOrderExpanded && (
@@ -358,6 +361,7 @@ export const Checkout: React.FC = () => {
                   defaultValue={table ?? 1}
                   readOnly 
                   disabled 
+                  prefix={<svg.TableSvg />}
                 />
               </Form.Item>
             </Form>
@@ -387,9 +391,25 @@ export const Checkout: React.FC = () => {
       {renderContent()}
       {renderButton()}
        {isLoading && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin percent="auto" size="large" fullscreen/>
-      </div>
+         <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'absolute',
+            inset: 0,
+            height: '100%',
+          }}
+          className='flex-center'
+        >
+          <PuffLoader
+            size={40}
+            color={'#455A81'}
+            aria-label='Loading Spinner'
+            data-testid='loader'
+            speedMultiplier={1}
+          />
+        </div>
       )}
     </components.Screen>
   );

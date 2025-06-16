@@ -466,9 +466,9 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
     <components.Screen>
       {renderHeader()}
       {renderContent()}
+      {renderLoader()}
       {renderPriceWithCounter()}
       {renderButton()}
-      {renderLoader()}
     </components.Screen>
   );
 };

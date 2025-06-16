@@ -6,6 +6,7 @@ import {HashSvg} from './HashSvg';
 import {PlusSvg} from './PlusSvg';
 import {UserSvg} from './UserSvg';
 import {OpenSvg} from './OpenSvg';
+import {TableSvg} from './TableSvg';
 import {CloseSvg} from './CloseSvg';
 import {PhoneSvg} from './PhoneSvg';
 import {HeartSvg} from './HeartSvg';
@@ -56,6 +57,7 @@ export const svg = {
   PlusSvg,
   OpenSvg,
   HashSvg,
+  TableSvg,
   EmailSvg,
   HeartSvg,
   CheckSvg,

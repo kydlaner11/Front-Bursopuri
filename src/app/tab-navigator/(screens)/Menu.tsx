@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Spin } from 'antd';
+import PuffLoader from 'react-spinners/PuffLoader';
 
 import {hooks} from '../../../hooks';
 import {Routes} from '../../../routes';
@@ -11,6 +11,8 @@ import {components} from '../../../components';
 
 export const Menu: React.FC = () => {
   const {menu, menuLoading} = hooks.useGetMenu();
+  const isLoading = menuLoading;
+
 
   const renderHeader = () => {
     return (
@@ -23,13 +25,6 @@ export const Menu: React.FC = () => {
   };
 
   const renderContent = () => {
-    if (menuLoading) {
-      return (
-        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh'}}>
-          <Spin size="large" />
-        </div>
-      );
-    }
     return (
       <main
         className='scrollable container'
@@ -76,6 +71,33 @@ export const Menu: React.FC = () => {
     );
   };
 
+  const renderLoader = () => {
+    if (!isLoading) return null;
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          inset: 0,
+          height: '100%',
+        }}
+        className='flex-center'
+      >
+        <PuffLoader
+          size={40}
+          color={'#455A81'}
+          aria-label='Loading Spinner'
+          data-testid='loader'
+          speedMultiplier={1}
+        />
+      </div>
+    );
+  };
+
+
   const renderModal = () => {
     return <components.Modal />;
   };
@@ -89,6 +111,7 @@ export const Menu: React.FC = () => {
       {renderHeader()}
       {renderContent()}
       {renderModal()}
+      {renderLoader()}
       {renderBottomTabBar()}
     </components.Screen>
   );

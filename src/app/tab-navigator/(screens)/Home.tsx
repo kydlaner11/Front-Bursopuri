@@ -5,7 +5,6 @@ import Image from 'next/image';
 import React, {useState} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import PuffLoader from 'react-spinners/PuffLoader';
-import { Spin } from 'antd';
 
 import {svg} from '../../../svg';
 import {items} from '../../../items';
@@ -18,24 +17,30 @@ export const Home: React.FC = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [recommendLoadingId, setRecommendLoadingId] = useState<string | null>(null);
+  const [isLoadingMenu, setIsLoadingMenu] = useState(false);
 
   const {menu, menuLoading} = hooks.useGetMenu();
   const {dishes, dishesLoading} = hooks.useGetDishes();
   // const {reviews, reviewsLoading} = hooks.useGetReviews();
-  const {carousel, carouselLoading} = hooks.useGetCarousel();
+  const {carousel, carouselLoading: carouselDataLoading} = hooks.useGetCarousel();
 
   const isLoading =
-    menuLoading || dishesLoading  || carouselLoading;
+    menuLoading || dishesLoading || carouselDataLoading;
 
   const handleSlideChange = (swiper: any) => {
     setActiveSlide(swiper.activeIndex);
   };
 
-  const {setOrderType, orderType} = stores.useCartStore(); // Retrieve orderType from the store
+  const {setOrderType, orderType} = stores.useCartStore();
 
   const handleOrderTypeChange = (type: string) => {
-    setOrderType(type); // Use setOrderType directly
+    setOrderType(type);
     setShowModal(false);
+  };
+
+  // Navigation handler with loading
+  const handleMenuNavigation = () => {
+    setIsLoadingMenu(true);
   };
 
   const renderHeader = () => {
@@ -67,6 +72,7 @@ export const Home: React.FC = () => {
          href={`${Routes.MENU_LIST}/all`}
          className='clickable'
           style={{flex: 1}}
+          onClick={handleMenuNavigation}
         >
           <components.InputField
             inputType='search'
@@ -74,21 +80,6 @@ export const Home: React.FC = () => {
             containerStyle={{flex: 1, backgroundColor: 'var(--white-color)'}}
           />
         </Link>
-        {/* <Link
-          href={`${Routes.MENU_LIST}/all`}
-          style={{
-            width: 50,
-            height: 50,
-            backgroundColor: 'var(--white-color)',
-            borderRadius: 10,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          className='center'
-        >
-          <svg.FilterSvg />
-        </Link> */}
       </section>
     );
   };
@@ -109,12 +100,14 @@ export const Home: React.FC = () => {
           style={{padding: '0 20px'}}
         >
           {menu.map((item) => {
+            const category = item.name.replace(' ', '-');
             return (
               <SwiperSlide key={item.id}>
                 <Link
-                  href={`${Routes.MENU_LIST}/all`}
+                  href={`${Routes.MENU_LIST}/${category}`}
                   className='clickable'
                   style={{position: 'relative'}}
+                  onClick={handleMenuNavigation}
                 >
                   <Image
                     src={item.image}
@@ -192,7 +185,7 @@ export const Home: React.FC = () => {
                 border: '2px solid var(--border-color)',
               }}
             >
-              <span className='h6'>{orderType}</span> {/* Use orderType here */}
+              <span className='h6'>{orderType}</span>
               <svg.ArrowDownSvg />
             </div>
           </div>
@@ -271,7 +264,10 @@ export const Home: React.FC = () => {
           {carousel.map((banner, index) => {
             return (
               <SwiperSlide key={banner.id}>
-                <Link href={`${Routes.MENU_ITEM}/${dishes[index].id}`}>
+                <Link 
+                  href={`${Routes.MENU_ITEM}/${dishes[index]?.id || ''}`}
+                  onClick={handleMenuNavigation}
+                >
                   <Image
                     src={banner.banner}
                     alt='Banner'
@@ -362,34 +358,6 @@ export const Home: React.FC = () => {
     );
   };
 
-  // const renderReviews = () => {
-  //   return (
-  //     <section style={{marginBottom: 20}}>
-  //       <components.BlockHeading
-  //         href={Routes.REVIEWS}
-  //         title='Our Happy clients say'
-  //         containerStyle={{marginLeft: 20, marginRight: 20, marginBottom: 14}}
-  //       />
-  //       <Swiper
-  //         spaceBetween={14}
-  //         slidesPerView={1.2}
-  //         pagination={{clickable: true}}
-  //         navigation={true}
-  //         mousewheel={true}
-  //         style={{padding: '0 20px'}}
-  //       >
-  //         {reviews.map((review: any) => {
-  //           return (
-  //             <SwiperSlide key={review.id}>
-  //               <items.ReviewItem review={review} />
-  //             </SwiperSlide>
-  //           );
-  //         })}
-  //       </Swiper>
-  //     </section>
-  //   );
-  // };
-
   const renderContent = () => {
     if (isLoading) return null;
     return (
@@ -402,7 +370,6 @@ export const Home: React.FC = () => {
         {renderOrdertype()}
         {renderCategories()}
         {renderRecommendedDishes()}
-        {/* {renderReviews()} */}
       </main>
     );
   };
@@ -447,12 +414,8 @@ export const Home: React.FC = () => {
       {renderContent()}
       {renderModal()}
       {renderLoader()}
+      {isLoadingMenu && renderLoader()}
       {renderBottomTabBar()}
-       {isLoading && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin percent="auto" size="large" fullscreen/>
-      </div>
-      )}
     </components.Screen>
   );
 };
