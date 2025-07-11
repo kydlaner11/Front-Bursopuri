@@ -13,7 +13,7 @@ export const DishName: React.FC<Props> = ({dish, style}) => {
       style={style}
       className='t14 number-of-lines-1'
     >
-      {dish.name}
+      {dish.name} 
     </span>
   );
 };

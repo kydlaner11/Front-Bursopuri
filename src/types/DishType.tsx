@@ -29,6 +29,7 @@ export type DishType = {
   description: string;
   isRecommended?: boolean;
   tersedia?: boolean;
+  stock?: number; // Optional, if stock is not always provided
   dietaryPreferences?: string[];
   selectedOptions?: SelectedOption[]; // <- ini bagian penting
   option?: Record<string, DishOption>; // Add this to store the options from the response

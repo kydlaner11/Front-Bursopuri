@@ -8,6 +8,7 @@ import {dish as dishItem} from '../dish';
 import { FormOutlined, UpOutlined, DownOutlined  } from '@ant-design/icons';
 import { formatToIDRCurrency } from '../utils/currencyFormatter';
 import {getSelectedOptionsPrice} from '../utils/selectedOptions';
+import { message } from 'antd';
 
 import type {DishType} from '../types';
 
@@ -38,7 +39,7 @@ const MinusSvg: React.FC = () => {
   );
 };
 
-const PlusSvg: React.FC = () => {
+const PlusSvg: React.FC<{disabled?: boolean}> = ({disabled = false}) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
@@ -49,11 +50,11 @@ const PlusSvg: React.FC = () => {
       <rect
         width={21}
         height={21}
-        fill='#E6F3F8'
+        fill={disabled ? '#F0F0F0' : '#E6F3F8'}
         rx={10.5}
       />
       <path
-        stroke='#0C1D2E'
+        stroke={disabled ? '#CCCCCC' : '#0C1D2E'}
         strokeLinecap='round'
         strokeLinejoin='round'
         strokeWidth={1.2}
@@ -66,7 +67,37 @@ const PlusSvg: React.FC = () => {
 export const OrderItem: React.FC<Props> = ({dish, isLast}) => {
   const {addToCart, removeFromCart} = stores.useCartStore();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [messages, contextHolder] = message.useMessage();
   const extra = getSelectedOptionsPrice(dish.selectedOptions || []);
+
+  // Stock-related logic
+  const hasStock = dish?.stock !== null && dish?.stock !== undefined;
+  const stockCount = dish?.stock || 0;
+  const currentQuantity = dish.quantity || 1;
+  
+  // Check if we can add more items
+  const isAtMaxStock = hasStock && currentQuantity >= stockCount;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    if (isAtMaxStock) {
+      messages.warning(`Stok tersedia hanya ${stockCount}`);
+      return;
+    }
+    
+    addToCart({
+      ...dish,
+      quantity: 1,
+    });
+  };
+
+  const handleRemoveFromCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    removeFromCart(dish);
+  };
 
   return (
     <div
@@ -80,6 +111,7 @@ export const OrderItem: React.FC<Props> = ({dish, isLast}) => {
         marginBottom: isLast ? 0 : 16,
       }}
     >
+      {contextHolder}
       <div style={{display: 'flex', gap: 12, alignItems: 'center'}}>
         <Image
           src={dish.image}
@@ -107,6 +139,33 @@ export const OrderItem: React.FC<Props> = ({dish, isLast}) => {
             {/* <div style={{width: 1, height: 10, backgroundColor: '#D5DCE3'}} />
             <span className='t14'>{dish.weight}g</span> */}
           </div>
+          
+          {/* Stock information
+          {hasStock && stockCount < 5 && (
+            <div style={{ marginTop: 4 }}>
+              <span style={{ 
+                color: '#ff6b6b', 
+                fontSize: '12px', 
+                fontWeight: 500 
+              }}>
+                Sisa stok = {stockCount}
+              </span>
+            </div>
+          )} */}
+          
+          {/* Max stock reached warning */}
+          {isAtMaxStock && (
+            <div style={{ marginTop: 4 }}>
+              <span style={{ 
+                color: '#ff6b6b', 
+                fontSize: '12px', 
+                fontWeight: 500 
+              }}>
+                Maksimal {stockCount} item
+              </span>
+            </div>
+          )}
+          
           <button
             className='t12'
             style={{
@@ -139,31 +198,32 @@ export const OrderItem: React.FC<Props> = ({dish, isLast}) => {
           }}
         >
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              removeFromCart(dish);
+            onClick={handleRemoveFromCart}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
             }}
           >
             <MinusSvg />
           </button>
-          <span className="t12">{dish.quantity}</span>
+          <span className="t12" style={{ margin: '8px 0' }}>{dish.quantity}</span>
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              addToCart({
-                ...dish,
-                quantity: 1,
-              });
+            onClick={handleAddToCart}
+            disabled={isAtMaxStock}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: isAtMaxStock ? 'not-allowed' : 'pointer',
+              padding: 0,
+              opacity: isAtMaxStock ? 0.5 : 1,
             }}
           >
-            <PlusSvg />
+            <PlusSvg disabled={isAtMaxStock} />
           </button>
         </div>
       </div>
-
-      
 
       {isExpanded && (
         <div
@@ -201,4 +261,3 @@ export const OrderItem: React.FC<Props> = ({dish, isLast}) => {
     </div>
   );
 };
-

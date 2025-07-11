@@ -80,6 +80,12 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
   const dish = dishes.find((dish) => dish.id === menuItemId);
   const options = dish?.option || {}; // Use options from the API response
 
+  // Stock-related logic
+  const hasStock = dish?.stock !== null && dish?.stock !== undefined;
+  const stockCount = dish?.stock || 0;
+  const isLowStock = hasStock && stockCount < 5;
+  const maxQuantity = hasStock ? stockCount : Infinity;
+
   const onSelect = (category: keyof typeof options, choice: string) => {
     const categoryOptions = options[category];
     if (!categoryOptions) return;
@@ -93,7 +99,9 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
   };
 
     const handleQuantityChange = (newQuantity: number) => {
-      setLocalQuantity(newQuantity);
+      // Ensure quantity doesn't exceed stock limit
+      const limitedQuantity = hasStock ? Math.min(newQuantity, maxQuantity) : newQuantity;
+      setLocalQuantity(limitedQuantity);
     };
    
 
@@ -259,6 +267,18 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
         </div>
         <p className='t16'>{dish?.description}</p>
         
+        {/* Stock information */}
+        {isLowStock && (
+          <div style={{ marginTop: 10 }}>
+            <span style={{ 
+              color: '#ff6b6b', 
+              fontSize: '14px', 
+              fontWeight: 'var(--fw-medium)' 
+            }}>
+              Sisa stok = {stockCount}
+            </span>
+          </div>
+        )}
       </section>
     );
   };
@@ -307,12 +327,20 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
 
   const renderPriceWithCounter = () => {
     const handleIncrease = () => {
-      handleQuantityChange(localQuantity + 1);
+      const newQuantity = localQuantity + 1;
+      if (hasStock && newQuantity > maxQuantity) {
+        messages.warning(`Stok tersedia hanya ${maxQuantity}`);
+        return;
+      }
+      handleQuantityChange(newQuantity);
     };
 
     const handleDecrease = () => {
       handleQuantityChange(localQuantity > 1 ? localQuantity - 1 : 1);
     };
+
+    // Check if increase button should be disabled
+    const isIncreaseDisabled = hasStock && localQuantity >= maxQuantity;
 
     return (
       <section className='container'>
@@ -349,8 +377,12 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
             }}
           >
             <button
-              style={{padding: '20px'}}
+              style={{
+                padding: '20px',
+                opacity: localQuantity <= 1 ? 0.5 : 1,
+              }}
               onClick={handleDecrease}
+              disabled={localQuantity <= 1}
             >
               <MinusSvg />
             </button>
@@ -358,8 +390,12 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
             <span className='t14'>{localQuantity}</span>
 
             <button
-              style={{padding: '20px'}}
+              style={{
+                padding: '20px',
+                opacity: isIncreaseDisabled ? 0.5 : 1,
+              }}
               onClick={handleIncrease}
+              disabled={isIncreaseDisabled}
             >
               <PlusSvg />
             </button>
@@ -382,18 +418,27 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
   };
 
   const renderButton = () => {
+    // Check if item is out of stock
+    const isOutOfStock = hasStock && stockCount === 0;
+    
     return (
       <section
         className='container'
         style={{paddingTop: 10, paddingBottom: 20}}
       >
         <components.Button
-          label='Tambahkan ke Keranjang'
+          label={isOutOfStock ? 'Stok Habis' : 'Tambahkan ke Keranjang'}
           onClick={() => {
+            if (isOutOfStock) {
+              messages.error('Stok habis, tidak bisa menambahkan ke keranjang');
+              return;
+            }
+            
             if (!validateOptions()) {
               messages.info('Pilih mau di-custom seperti apa');
               return;
             }
+            
             addToCart({
               ...dish,
               quantity: localQuantity,
@@ -409,7 +454,11 @@ export const MenuItem: React.FC<Props> = ({menuItemId}) => {
               router.push(Routes.TAB_NAVIGATOR);
             }
           }}
-          containerStyle={{marginBottom: 10}}
+          containerStyle={{
+            marginBottom: 10,
+            opacity: isOutOfStock ? 0.5 : 1,
+          }}
+          disabled={isOutOfStock}
         />
       </section>
     );

@@ -58,6 +58,9 @@ export const RecommendedItem: React.FC<Props> = ({item, style, loading = false, 
   // const ifInWishlist = wishlist.find((item) => item.id === dishId);
 
   const isAvailable = item.tersedia !== false; // Default to true if tersedia is undefined
+  
+  // Stock logic: show stock info only if stock is a number and less than 5
+  const shouldShowStock = typeof item.stock === 'number' && item.stock < 5;
 
   return (
     <Link
@@ -110,6 +113,26 @@ export const RecommendedItem: React.FC<Props> = ({item, style, loading = false, 
             }}
           >
             STOK HABIS
+          </div>
+        )}
+        
+        {/* Stock indicator for low stock */}
+        {shouldShowStock && isAvailable && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom : '4px',
+              left: '7px',
+              color: 'red',
+              padding: '4px 8px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              zIndex: 2,
+              whiteSpace: 'nowrap',
+            }}
+            className='t14 number-of-lines-1'
+          >
+            Sisa stok = {item.stock}
           </div>
         )}
       </div>
