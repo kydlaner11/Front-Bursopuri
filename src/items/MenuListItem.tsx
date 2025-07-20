@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import {Spin} from 'antd';
 
 // import {svg} from '../svg';
 import {Routes} from '../routes';
@@ -12,6 +13,8 @@ import { useRouter } from 'next/navigation';
 type Props = {
   dish: DishType;
   isLast: boolean;
+  isLoading?: boolean;
+  setLoadingDishId?: (id: string | null) => void;
 };
 
 // const PlusSvg = () => {
@@ -39,7 +42,7 @@ type Props = {
 //   );
 // };
 
-export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
+export const MenuListItem: React.FC<Props> = ({dish, isLast, isLoading = false, setLoadingDishId}) => {
   // const {list: cart} = stores.useCartStore();
   const router = useRouter();
   const formattedPrice = formatToIDRCurrency(Number(dish.price));
@@ -169,22 +172,35 @@ export const MenuListItem: React.FC<Props> = ({dish, isLast}) => {
           bottom: 10,
           padding: '10px 18px',
           borderRadius: 8,
-          backgroundColor: 'var(--main-turquoise)',
+          backgroundColor: isLoading ? 'var(--text-color)' : 'var(--main-turquoise)',
           color: 'var(--white-color)',
           border: 'none',
           fontWeight: 600,  
           fontSize: 12,
-          cursor: 'pointer',
+          cursor: isLoading ? 'not-allowed' : 'pointer',
           boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
           transition: 'background 0.2s',
+          opacity: isLoading ? 0.7 : 1,
         }}
-        onClick={(e) => {
+        onClick={async (e) => {
           e.stopPropagation();
           e.preventDefault();
-          router.push(Routes.MENU_ITEM + `/${dish.id}`);
+          if (isLoading || !setLoadingDishId) return;
+          
+          setLoadingDishId(dish.id);
+          try {
+            await router.push(Routes.MENU_ITEM + `/${dish.id}`);
+          } finally {
+            setLoadingDishId(null);
+          }
         }}
+        disabled={isLoading}
       >
-        Tambah Pesanan
+        {isLoading ? (
+          <Spin size="small" style={{ color: 'white' }} />
+        ) : (
+          'Tambah Pesanan'
+        )}
       </button>
     </li>
   );

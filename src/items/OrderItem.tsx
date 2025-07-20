@@ -237,16 +237,16 @@ export const OrderItem: React.FC<Props> = ({dish, isLast}) => {
               {dish.selectedOptions.map((option, idx) => (
                 <li key={idx} style={{marginTop: 10}}> 
                   <p className='t14' style={{ color: '#555'}}>
-                    {option.name}
+                    {option.name} : <span style={{ fontWeight: 500 }}>{option.selected.map((selectedItem) => selectedItem.name).join(', ')}</span>
                   </p>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  {/* <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <p className='t14' style={{ color: 'var(--main-dark)', fontWeight: 500 }}>
                       {option.selected.map((selectedItem) => selectedItem.name).join(', ')}
                     </p>
                     <p className='t14' style={{ color: '#555', marginLeft: 10 }}>
                       {option.selected.map((selectedItem) => formatToIDRCurrency(selectedItem.price)).join(', ')}
                     </p>
-                  </div>
+                  </div> */}
                 </li>
               ))}
             </ul>

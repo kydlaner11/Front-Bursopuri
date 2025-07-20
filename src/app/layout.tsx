@@ -1,5 +1,8 @@
 import {DM_Sans} from 'next/font/google';
-import type {Metadata, Viewport} from 'next';
+import type {
+  // Metadata, 
+  Viewport
+} from 'next';
 
 import 'swiper/css';
 import '../scss/_index.scss';
@@ -10,7 +13,7 @@ const dmSans = DM_Sans({
 });
 
 export const viewport: Viewport = {themeColor: '#F6F9F9'};
-export const metadata: Metadata = {manifest: '/manifest.json'};
+// export const metadata: Metadata = {manifest: '/manifest.json'};
 
 export default function RootLayout({
   children,

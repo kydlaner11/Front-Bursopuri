@@ -20,6 +20,7 @@ export const MenuList: React.FC<Props> = ({category}) => {
   );
   const list = category === 'all' ? dishes : exists;
   const [search, setSearch] = useState('');
+  const [loadingDishId, setLoadingDishId] = useState<string | null>(null);
   
   // Filter dishes based on search
   const filteredDishes = list.filter((dish) =>
@@ -124,6 +125,8 @@ export const MenuList: React.FC<Props> = ({category}) => {
                   <items.MenuListItem
                     dish={dish}
                     isLast={isLast}
+                    isLoading={loadingDishId === dish.id}
+                    setLoadingDishId={setLoadingDishId}
                   />
                   {!isAvailable && (
                     <div
