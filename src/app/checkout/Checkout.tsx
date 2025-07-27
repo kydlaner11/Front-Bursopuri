@@ -11,7 +11,7 @@ import { FormOutlined, DownOutlined, UpOutlined   } from '@ant-design/icons';
 import { formatToIDRCurrency } from '@/utils/currencyFormatter';
 import { message, Form, Input } from 'antd';
 import PuffLoader from 'react-spinners/PuffLoader';
-import Api from '../../api'; // tambahkan import Api
+import Api from '../../api';
 import {svg} from '../../svg';
 
 
@@ -22,26 +22,107 @@ export const Checkout: React.FC = () => {
   const {total, subtotal, list, orderType} = stores.useCartStore();
   const [expandedItem, setExpandedItem] = React.useState<number | null>(null);
   const [isOrderExpanded, setIsOrderExpanded] = React.useState(false);
-  const [paymentMethod] = React.useState<'CASH' | 'QRIS'>('CASH');
-  const [isLoading, setIsLoading] = React.useState(false); // Add loading state
+  const [paymentMethod, setPaymentMethod] = React.useState<'CASH' | 'OTHER'>('CASH'); // Make it mutable
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  // Function untuk handle payment gateway
+  const handleTransferPayment = async (orderPayload: any) => {
+    try {
+       const response = await Api.post('/bursopuri/order', orderPayload);
+      const responseData = response.data.data;
+      
+      console.log('Cash payment order placed:', responseData);
+      
+      const orderId = responseData?.id || 'defaultOrderId'; 
+      const queueNumber = responseData?.queueNumber || 'defaultQueue'; 
+      const totalOrder = responseData?.total || total;
+      
+      router.push(
+        `${Routes.ORDER_TRANSFER}?orderId=${orderId}&queue=${queueNumber}&total=${totalOrder}`
+      );
+    } catch (error) {
+      console.error('Error with transfer payment:', error);
+      throw error;
+    }
+  };
+
+  // Function untuk handle cash payment (existing logic)
+  const handleCashPayment = async (orderPayload: any) => {
+    try {
+      const response = await Api.post('/bursopuri/order', orderPayload);
+      const responseData = response.data.data;
+      
+      console.log('Cash payment order placed:', responseData);
+      
+      const orderId = responseData?.id || 'defaultOrderId'; 
+      const queueNumber = responseData?.queueNumber || 'defaultQueue'; 
+      const totalOrder = responseData?.total || total;
+      
+      router.push(
+        `${Routes.ORDER_WAITING}?orderId=${orderId}&queue=${queueNumber}&total=${totalOrder}`
+      );
+      
+    } catch (error) {
+      console.error('Error with cash payment:', error);
+      throw error;
+    }
+  };
+
+  // Helper: Only letters (for name)
+  const isLettersOnly = (str: string) => /^[A-Za-z\s]+$/.test(str);
+  // Helper: Only numbers (for phone)
+  const isNumbersOnly = (str: string) => /^\d+$/.test(str);
 
   const handleConfirmOrder = async () => {
     try {
-      setIsLoading(true); // Start loader
+      setIsLoading(true);
       // Get form data
       const form = document.getElementById('checkout-form') as HTMLFormElement;
       const customerName = (form.elements.namedItem('customerName') as HTMLInputElement).value;
-      const customerPhone = (form.elements.namedItem('customerPhone') as HTMLInputElement).value;
-
-      if (!customerName || !customerPhone ) {
-        messages.error('Please fill in all required fields');
-        setIsLoading(false); // Stop loader
-        return;
-      }
       
+      // Generate 3 random numbers for Dine in orders
+      const generateRandomNumbers = () => {
+        const num1 = Math.floor(Math.random() * 9000) + 100; // 3-digit number
+        // const num2 = Math.floor(Math.random() * 900) + 100; // 3-digit number  
+        // const num3 = Math.floor(Math.random() * 900) + 100; // 3-digit number
+        return `${num1}`;
+      };
+      
+      const customerPhone = orderType === 'Dine in' ? generateRandomNumbers() : (form.elements.namedItem('customerPhone') as HTMLInputElement)?.value || '';
+
+      // Validation based on order type
+      if (orderType === 'Dine in') {
+        if (!customerName) {
+          messages.error('Please fill in customer name');
+          setIsLoading(false);
+          return;
+        }
+        if (!isLettersOnly(customerName)) {
+          messages.error('Nama hanya boleh berisi huruf dan spasi');
+          setIsLoading(false);
+          return;
+        }
+      } else { // TAKE_AWAY
+        if (!customerName || !customerPhone) {
+          messages.error('Please fill in all required fields');
+          setIsLoading(false);
+          return;
+        }
+        if (!isLettersOnly(customerName)) {
+          messages.error('Nama hanya boleh berisi huruf dan spasi');
+          setIsLoading(false);
+          return;
+        }
+        if (!isNumbersOnly(customerPhone)) {
+          messages.error('Nomor telepon hanya boleh berisi angka');
+          setIsLoading(false);
+          return;
+        }
+      }
+
       // Format items with proper structure
       const items = list.map((dish) => ({
-        menuId: dish.id, // Assuming dish object has an id property
+        menuId: dish.id,
         name: dish.name,
         quantity: dish.quantity,
         price: dish.price,
@@ -52,7 +133,7 @@ export const Checkout: React.FC = () => {
           choicePrice: option.selected.map(selectedItem => selectedItem.price).join(', '),
         })) || []
       }));
-  
+
       // Construct the order payload
       const orderPayload = {
         orderType: orderType,
@@ -67,26 +148,21 @@ export const Checkout: React.FC = () => {
         },
         items: items
       };
-  
-      console.log('Sending order to API:', orderPayload);
-      
-      // Send the order to the API
-      const response = await Api.post('/bursopuri/order', orderPayload); // gunakan Api
-  
-      const responseData = response.data.data;
-      console.log('Order successfully placed:', responseData);
-      
-      const orderId = responseData?.id   || 'defaultOrderId'; 
-      const queueNumber = responseData?.queueNumber || 'defaultQueue'; 
-      const totalOrder = responseData?.total || total; // Use the total from the response or fallback to the passed total
-      router.push(
-        `${Routes.ORDER_WAITING}?orderId=${orderId}&queue=${queueNumber}&total=${totalOrder}`
-      );
+
+      console.log('Processing order with payment method:', paymentMethod);
+
+      // Handle different payment methods
+      if (paymentMethod === 'OTHER') {
+        await handleTransferPayment(orderPayload);
+      } else {
+        await handleCashPayment(orderPayload);
+      }
+
     } catch (error) {
       console.error('Error confirming order:', error);
       messages.error('Failed to place the order. Please try again.');
     } finally {
-      setIsLoading(false); // Stop loader
+      setIsLoading(false);
     }
   };
 
@@ -109,10 +185,11 @@ export const Checkout: React.FC = () => {
         {<div style={{marginBottom: 10}}>
           <components.Tag
             label='Tipe Pesanan'
-            value={orderType} // Display the current order type
+            value={orderType}
           />
         </div>}
-        {/* PAYMENT */}
+        
+        {/* PAYMENT METHOD SELECTION */}
         <section
           className='container'
           style={{
@@ -122,50 +199,58 @@ export const Checkout: React.FC = () => {
             backgroundColor: 'var(--white-color)',
           }}
         >
-          <span
-            style={{
-              display: 'flex',
-              flex: 1,
-              padding: 15,
-              borderRadius: 5,
-              border: `1px solid var(--main-turquoise)`,
-              backgroundColor:  'transparent',
-              color:  'var(--main-turquoise)',
-            }}
-          >
-            Bayar di Kasir
-          </span>
-          {/* <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ marginBottom: 15 }}>
+            <span className='t16' style={{ color: 'var(--main-dark)', fontWeight: 500 }}>
+              Pilih Metode Pembayaran
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: 10 }}>
             <button
-              onClick={() => setPaymentMethod('cash')}
+              onClick={() => setPaymentMethod('CASH')}
               style={{
                 flex: 1,
                 padding: 15,
                 borderRadius: 5,
-                border: `1px solid var(--main-turquoise)`,
-                backgroundColor:  'transparent',
-                color:  'var(--main-turquoise)',
+                border: `1px solid ${paymentMethod === 'CASH' ? 'var(--main-turquoise)' : 'var(--border-color)'}`,
+                backgroundColor: paymentMethod === 'CASH' ? 'var(--main-turquoise)' : 'transparent',
+                color: paymentMethod === 'CASH' ? 'var(--white-color)' : 'var(--main-turquoise)',
                 cursor: 'pointer',
+                transition: 'all 0.3s ease',
               }}
             >
-              Pay at cashier
+              Pay at Cashier
             </button>
             <button
-              onClick={() => setPaymentMethod('card')}
+              onClick={() => setPaymentMethod('OTHER')}
               style={{
                 flex: 1,
-                padding: 10,
+                padding: 15,
                 borderRadius: 5,
-                border: `1px solid ${paymentMethod === 'card' ? 'var(--main-dark)' : 'var(--border-color)'}`,
-                backgroundColor: paymentMethod === 'card' ? 'var(--main-dark)' : 'transparent',
-                color: paymentMethod === 'card' ? 'var(--white-color)' : 'var(--main-dark)',
+                border: `1px solid ${paymentMethod === 'OTHER' ? 'var(--main-turquoise)' : 'var(--border-color)'}`,
+                backgroundColor: paymentMethod === 'OTHER' ? 'var(--main-turquoise)' : 'transparent',
+                color: paymentMethod === 'OTHER' ? 'var(--white-color)' : 'var(--main-turquoise)',
                 cursor: 'pointer',
+                transition: 'all 0.3s ease',
               }}
             >
-              Pay with card
+              Transfer Pay
             </button>
-          </div> */}
+          </div>
+          
+          {/* Payment Method Description */}
+          <div style={{ marginTop: 10, padding: 10, borderRadius: 5, backgroundColor: 'var(--light-gray)' }}>
+            {paymentMethod === 'CASH' ? (
+              <span className='t12' style={{ color: 'var(--secondary-text-color)' }}>
+                Anda akan membayar langsung di kasir setelah pesanan siap.
+              </span>
+            ) : (
+              <span className='t12' style={{ color: 'var(--secondary-text-color)' }}>
+                Anda akan diarahkan ke halaman pembayaran online untuk menyelesaikan transaksi.
+              </span>
+            )}
+          </div>
         </section>
+
         {/* SUMMARY */}
         <section
           style={{
@@ -297,7 +382,7 @@ export const Checkout: React.FC = () => {
           )}
         </section>
 
-        {/* SHIPPING DETAILS */}
+        {/* CUSTOMER INFORMATION */}
         <section
           style={{
             padding: 20,
@@ -342,25 +427,52 @@ export const Checkout: React.FC = () => {
               }}
             >
               <Form.Item name="customerName">
-                <Input 
-                  size="large" 
-                  placeholder="Nama Lengkap" 
+                <Input
+                  size="large"
+                  placeholder="Nama Lengkap"
+                  maxLength={50}
+                  onKeyPress={(e) => {
+                    if (!/[A-Za-z\s]/.test(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onPaste={e => {
+                    const paste = e.clipboardData.getData('text');
+                    if (!/^[A-Za-z\s]+$/.test(paste)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               </Form.Item>
-              
-              <Form.Item name="customerPhone">
-                <Input 
-                  size="large" 
-                  placeholder="Nomor Telepon" 
-                />
-              </Form.Item>
-              
+
+              {/* Conditional phone number field - only show for TAKE_AWAY */}
+              {orderType === 'Take Away' && (
+                <Form.Item name="customerPhone">
+                  <Input
+                    size="large"
+                    placeholder="Nomor Telepon"
+                    maxLength={15}
+                    onKeyPress={(e) => {
+                      if (!/\d/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onPaste={e => {
+                      const paste = e.clipboardData.getData('text');
+                      if (!/^\d+$/.test(paste)) {
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                </Form.Item>
+              )}
+
               <Form.Item name="tableNumber">
-                <Input 
-                  size="large" 
+                <Input
+                  size="large"
                   defaultValue={table ?? 1}
-                  readOnly 
-                  disabled 
+                  readOnly
+                  disabled
                   prefix={<svg.TableSvg />}
                 />
               </Form.Item>
@@ -375,15 +487,13 @@ export const Checkout: React.FC = () => {
     return (
       <section style={{padding: 20}}>
         <components.Button
-          label='Confirm order'
+          label={paymentMethod === 'OTHER' ? 'Proceed to Payment' : 'Confirm Order'}
           onClick={handleConfirmOrder}
-          disabled={isLoading} // Disable button while loading
+          disabled={isLoading}
         />
       </section>
     );
   };
-
-  
 
   return (
     <components.Screen>
@@ -414,6 +524,3 @@ export const Checkout: React.FC = () => {
     </components.Screen>
   );
 };
-
-
-

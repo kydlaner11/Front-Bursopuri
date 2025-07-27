@@ -9,6 +9,8 @@ interface TagProps {
 }
 
 export const Tag: React.FC<TagProps> = ({ label, value, onClick, icon = <CheckCircleOutlined /> }) => {
+  const isTakeAway = value === "Take Away";
+  
   return (
     <div
       style={{
@@ -16,9 +18,9 @@ export const Tag: React.FC<TagProps> = ({ label, value, onClick, icon = <CheckCi
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '8px 12px',
-        border: '1px solid var(--main-turquoise)',
+        border: isTakeAway ? '1px solid #007bff' : '1px solid var(--main-turquoise)',
         borderRadius: 10,
-        backgroundColor: 'rgba(252, 0, 0, 0.08)',
+        backgroundColor: isTakeAway ? 'rgba(0, 123, 255, 0.08)' : 'rgba(252, 0, 0, 0.08)',
         cursor: onClick ? 'pointer' : 'default',
       }}
       onClick={onClick}

@@ -22,6 +22,7 @@ export enum Routes {
   NEW_PASSWORD = '/new-password',
   ORDER_HISTORY = '/order-history',
   ORDER_WAITING = '/order-waiting',
+  ORDER_TRANSFER = '/order-transfer',
   TAB_NAVIGATOR = '/tab-navigator',
   LEAVE_A_REVIEW = '/leave-a-review',
   FORGOT_PASSWORD = '/forgot-password',
