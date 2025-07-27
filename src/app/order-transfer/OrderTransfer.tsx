@@ -9,7 +9,6 @@ import { formatToIDRCurrency } from '../../utils/currencyFormatter';
 import { Spin, Modal, message } from 'antd';
 import { QrcodeOutlined, BankOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import Api from '../../api';
-import useSnap from '../../hooks/useSnap';
 
 // Interface untuk response payment gateway (sesuai dengan backend)
 interface MidtransPaymentResponse {
@@ -28,6 +27,25 @@ interface PaymentRequest {
     phone?: string;
   };
 }
+
+// Declare Midtrans Snap global object with better typing
+declare global {
+  interface Window {
+    snap?: {
+      pay: (token: string, options?: {
+        onSuccess?: (result: any) => void;
+        onPending?: (result: any) => void;
+        onError?: (result: any) => void;
+        onClose?: () => void;
+      }) => void;
+    };
+  }
+}
+
+// Utility function to check if Midtrans Snap is available
+const isMidtransSnapReady = (): boolean => {
+  return !!(window.snap && typeof window.snap.pay === 'function');
+};
 
 type QueueNumberCardProps = {
   queueNumber: string | number;
@@ -236,40 +254,10 @@ const OrderTransferContent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [midtransLoaded, setMidtransLoaded] = useState(false);
-  const [paymentToken, setPaymentToken] = useState<string>('');
 
   const orderId = searchParams.get('orderId');
   const queueNumber = searchParams.get('queue');
   const total = searchParams.get('total');
-
-  // Use the useSnap hook for payment handling with popup mode
-  useSnap({
-    token: paymentToken,
-    mode: 'popup',
-    onSuccess: (result: any) => {
-      console.log('Payment success:', result);
-      message.success('Pembayaran berhasil!');
-      setPaymentToken(''); // Reset token after use
-      router.push(Routes.ORDER_SUCCESSFUL);
-    },
-    onPending: (result: any) => {
-      console.log('Payment pending:', result);
-      message.info('Pembayaran sedang diproses.');
-      setPaymentToken(''); // Reset token after use
-    },
-    onError: (result: any) => {
-      console.log('Payment error:', result);
-      message.error('Pembayaran gagal. Silakan coba lagi.');
-      setPaymentToken(''); // Reset token after use
-      router.push(Routes.ORDER_FAILED);
-    },
-    onClose: () => {
-      console.log('Payment popup closed');
-      message.warning('Pembayaran dibatalkan');
-      setPaymentToken(''); // Reset token after use
-      router.push(Routes.ORDER_FAILED);
-    }
-  });
 
   if (!orderId || !queueNumber || !total) {
     return <Spin size="large" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }} />;
@@ -291,7 +279,7 @@ const OrderTransferContent = () => {
     script.onload = () => {
       // Wait a bit for snap to be fully loaded
       setTimeout(() => {
-        if (window.snap && typeof window.snap.pay === 'function') {
+        if (isMidtransSnapReady()) {
           setMidtransLoaded(true);
           console.log('Midtrans Snap loaded successfully');
         } else {
@@ -402,10 +390,17 @@ const OrderTransferContent = () => {
   //   }
   // };
 
-  // Handle specific payment methods - refactored to use useSnap
+  // Handle specific payment methods - sekarang menggunakan endpoint yang sama
   const handleSpecificPayment = async (paymentType: 'QRIS' | 'OTHER') => {
     if (!midtransLoaded) {
       message.error('Sistem pembayaran belum siap. Silakan tunggu sebentar.');
+      return;
+    }
+
+    // Check if window.snap is available using utility function
+    if (!isMidtransSnapReady()) {
+      console.error('Midtrans Snap is not available');
+      message.error('Sistem pembayaran tidak tersedia. Silakan refresh halaman.');
       return;
     }
 
@@ -432,8 +427,33 @@ const OrderTransferContent = () => {
         // If redirect URL is provided, redirect directly
         window.location.href = redirect_url;
       } else if (token) {
-        // Set the token to trigger useSnap hook
-        setPaymentToken(token);
+        // Use Snap popup for payment with proper error handling
+        try {
+          window.snap!.pay(token, {
+            onSuccess: function(result: any): void {
+              console.log('Payment success:', result);
+              message.success('Pembayaran berhasil!');
+              router.push(Routes.ORDER_SUCCESSFUL);
+            },
+            onPending: function(result: any): void {
+              console.log('Payment pending:', result);
+              message.info('Pembayaran sedang diproses.');
+            },
+            onError: function(result: any): void {
+              console.log('Payment error:', result);
+              message.error('Pembayaran gagal. Silakan coba lagi.');
+              router.push(Routes.ORDER_FAILED);
+            },
+            onClose: function(): void {
+              console.log('Payment popup closed');
+              message.warning('Pembayaran dibatalkan');
+              router.push(Routes.ORDER_FAILED);
+            },
+          });
+        } catch (snapError) {
+          console.error('Error calling window.snap.pay:', snapError);
+          message.error('Gagal membuka jendela pembayaran. Silakan coba lagi.');
+        }
       } else {
         throw new Error('No payment token or redirect URL received');
       }
